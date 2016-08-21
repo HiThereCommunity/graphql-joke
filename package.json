@@ -1,0 +1,46 @@
+{
+  "name": "todo-list",
+  "version": "1.0.2",
+  "description": "Example of a graphql todo-list server",
+  "scripts": {
+    "start": "NODE_ENV=development nodemon src/index.js --exec babel-node",
+    "startWindows": "SET NODE_ENV=development&&nodemon src/index.js --exec babel-node",
+    "build": "babel src --ignore __tests__ --out-dir dist/",
+    "serve": "sudo NODE_ENV=production node dist/index.js",
+    "serveWindows": "SET NODE_ENV=production&&node dist/index.js",
+    "test": "mocha --require resources/mochaSetup src/**/__tests__/**/*.js",
+    "check": "flow check",
+    "travis": "npm run check && npm run test"
+  },
+  "engines": {
+    "node": "4.x || 5.x || 6.x",
+    "npm": "2.x || 3.x"
+  },
+  "keywords": [
+    "todo-list",
+    "graphQL",
+    "API",
+    "node.js"
+  ],
+  "author": "Dirk-Jan Rutten <dirkjanrutten@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0",
+    "express-graphql": "^0.5.3",
+    "graphql": "^0.6.0",
+    "pg": "^6.1.0",
+    "sequelize": "^3.24.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-plugin-transform-flow-strip-types": "^6.8.0",
+    "babel-polyfill": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-2": "^6.5.0",
+    "babel-register": "^6.9.0",
+    "chai": "^3.5.0",
+    "flow-bin": "^0.27.0",
+    "mocha": "^2.5.3",
+    "nodemon": "^1.9.2"
+  }
+}
