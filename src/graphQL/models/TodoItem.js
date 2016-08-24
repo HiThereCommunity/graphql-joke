@@ -10,8 +10,6 @@ type databaseItem = {
     is_done: boolean
 }
 
-import Postgres from "./../../connector";
-
 export default class TodoItem {
 
     _id: string;
@@ -52,21 +50,26 @@ export default class TodoItem {
 
     static async write(title: string, db: PostgresConnector): Promise<?TodoItem> {
 
-        let todoItem = await db.query("INSERT INTO todo_item(title, is_done) values ($1, $2) RETURNING *;", [title, false]);
+        let todoItem = await db.getTodoItem().create({title: title});
 
-        return todoItem.rowCount ===1 ? new TodoItem(todoItem.rows[0]) : null;
+        return todoItem ? new TodoItem(todoItem.dataValues) : null;
     }
 
     static async updateItem(id: number, completed: boolean, db: PostgresConnector): Promise<?TodoItem> {
 
-        let todoItem = await db.query("UPDATE todo_item SET is_done=$1 WHERE id=$2 RETURNING *;", [completed, id]);
+        let todoItem = await db.getTodoItem().findById(id);
 
-        return todoItem.rowCount ===1 ? new TodoItem(todoItem.rows[0]) : null;
+        if (!todoItem) return null;
+
+        await todoItem.update({is_done: completed});
+
+        return new TodoItem(todoItem.dataValues);
     }
 
-    static async delete(id: number, db: PostgresConnector): Promise<?TodoItem> {
+    static async delete(id: number, db: PostgresConnector): Promise<number> {
 
+        let todoItem = await db.getTodoItem().destroy({where: {id: id}});
 
-        return null;
+        return todoItem;
     }
 }

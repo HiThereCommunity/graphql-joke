@@ -33,7 +33,7 @@ export default new GraphQLSchema({
                 description: "todo item",
                 args: {
                     id: {
-                        type: GraphQLInt
+                        type: new GraphQLNonNull(GraphQLInt)
                     }
                 },
                 resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.gen(id, db)
@@ -55,7 +55,7 @@ export default new GraphQLSchema({
                         type: new GraphQLNonNull(GraphQLString)
                     }
                 },
-                resolve: (db: PostgresConnector, {title}): Promise<?TodoItem> => TodoItem.write(title, db)
+                resolve: (db:PostgresConnector, {title}):Promise<?TodoItem> => TodoItem.write(title, db)
             },
             updateTodo: {
                 type: GraphQLTodoItem,
@@ -67,17 +67,17 @@ export default new GraphQLSchema({
                         type: new GraphQLNonNull(GraphQLBoolean)
                     }
                 },
-                resolve: (db: PostgresConnector, {id, completed}: {id: string, completed: boolean}): Promise<?TodoItem> => TodoItem.updateItem(id, completed, db)
+                resolve: (db:PostgresConnector, {id, completed}: {id: number, completed: boolean}):Promise<?TodoItem> => TodoItem.updateItem(id, completed, db)
             },
             removeTodo: {
-                type: GraphQLTodoItem,
-                description: "Remove a to do item.",
+                type: GraphQLInt,
+                description: "Remove a to do item from the to do list.",
                 args: {
                     id: {
                         type: GraphQLInt
                     }
                 },
-                resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.delete(id, db)
+                resolve: (db:PostgresConnector, {id}: {id: number}):Promise<number> => TodoItem.delete(id, db)
             }
         })
     })

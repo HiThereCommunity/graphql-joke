@@ -62,10 +62,6 @@ export default class PostgresConnector {
 
         this._sequelize.sync({
             force:false
-        }).then(function() {
-            return todoItem.create({
-                title: 'play tennis'
-            });
         });
     }
 
