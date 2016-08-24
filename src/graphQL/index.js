@@ -33,19 +33,10 @@ export default new GraphQLSchema({
                 description: "todo item",
                 args: {
                     id: {
-                        type: GraphQLInt
+                        type: new GraphQLNonNull(GraphQLInt)
                     }
                 },
                 resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.gen(id, db)
-            },
-            createTodo: {
-                type: GraphQLTodoItem,
-                args: {
-                    title: {
-                        type: new GraphQLNonNull(GraphQLString)
-                    }
-                },
-                resolve: (db: PostgresConnector, {title}): Promise<?TodoItem> => TodoItem.write(title, db)
             },
             getList: {
                 type: GraphQLTodoList,
@@ -68,6 +59,15 @@ export default new GraphQLSchema({
                     }
                 },
                 resolve: (db: PostgresConnector, {id, completed}: {id: string, completed: boolean}): Promise<?TodoItem> => TodoItem.updateItem(id, completed, db)
+            },
+            createTodo: {
+                type: GraphQLTodoItem,
+                args: {
+                    title: {
+                        type: new GraphQLNonNull(GraphQLString)
+                    }
+                },
+                resolve: (db: PostgresConnector, {title}): Promise<?TodoItem> => TodoItem.write(title, db)
             }
         })
     })
