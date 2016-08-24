@@ -13,7 +13,8 @@ import {
     GraphQLObjectType,
     GraphQLSchema,
     GraphQLNonNull,
-    GraphQLBoolean
+    GraphQLBoolean,
+    GraphQLInt
 } from 'graphql';
 
 import {TodoItem, TodoList} from "./models";
@@ -32,7 +33,7 @@ export default new GraphQLSchema({
                 description: "todo item",
                 args: {
                     id: {
-                        type: GraphQLString
+                        type: GraphQLInt
                     }
                 },
                 resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.gen(id, db)
@@ -60,7 +61,7 @@ export default new GraphQLSchema({
                 type: GraphQLTodoItem,
                 args: {
                     id: {
-                        type: new GraphQLNonNull(GraphQLString)
+                        type: new GraphQLNonNull(GraphQLInt)
                     },
                     completed: {
                         type: new GraphQLNonNull(GraphQLBoolean)

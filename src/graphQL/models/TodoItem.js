@@ -2,7 +2,7 @@
 /**
  * Created by Dirk-Jan Rutten on 13/08/16.
  */
-var Pool = require('pg').Pool;
+import PostgresConnector from "./../../connector";
 
 type databaseItem = {
     id: string,
@@ -34,7 +34,7 @@ export default class TodoItem {
         return this._isDone;
     }
 
-    static initializeFromData(id: string, title: string, isDone: boolean): TodoItem{
+    static initializeFromData(id: number, title: string, isDone: boolean): TodoItem{
 
         return new TodoItem({
             id: id,
@@ -43,21 +43,21 @@ export default class TodoItem {
         });
     }
 
-    static async gen(id: string, db: Pool): Promise<?TodoItem> {
+    static async gen(id: number, db: PostgresConnector): Promise<?TodoItem> {
 
-        let todoItem = await db.query("SELECT * FROM todo_item WHERE id=$1 LIMIT 1;", [id]);
+        let todoItem = await db.getTodoItem().findById(id);
 
-        return todoItem.rowCount ===1 ? new TodoItem(todoItem.rows[0]) : null;
+        return todoItem ? new TodoItem(todoItem.dataValues) : null;
     }
 
-    static async write(title: string, db: Pool): Promise<?TodoItem> {
+    static async write(title: string, db: PostgresConnector): Promise<?TodoItem> {
 
         let todoItem = await db.query("INSERT INTO todo_item(title, is_done) values ($1, $2) RETURNING *;", [title, false]);
 
         return todoItem.rowCount ===1 ? new TodoItem(todoItem.rows[0]) : null;
     }
 
-    static async updateItem(id: string, completed: boolean, db: Pool): Promise<?TodoItem> {
+    static async updateItem(id: number, completed: boolean, db: PostgresConnector): Promise<?TodoItem> {
 
         let todoItem = await db.query("UPDATE todo_item SET is_done=$1 WHERE id=$2 RETURNING *;", [completed, id]);
 

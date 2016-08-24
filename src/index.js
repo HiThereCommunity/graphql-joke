@@ -14,28 +14,20 @@ import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import schema from "./graphQL";
 const app = express();
-
-import connector from "./connectDB";
-
 import PostgresConnector from "./connector";
 
 let config = require("./../dbConfig.json");
 
 let postgres = new PostgresConnector(config);
 
-
 /**
  * The GraphiQL endpoint
  */
-app.use(`/graphiql`, graphqlHTTP(async req => {
-    //await postgres.synchronizeDB();
-
-     return {
+app.use(`/graphiql`, graphqlHTTP(req => ({
         schema: schema,
         graphiql: true,
         rootValue: postgres
-     }
-}
+    })
 ));
 
 
@@ -45,7 +37,7 @@ app.use(`/graphiql`, graphqlHTTP(async req => {
 app.use('/', graphqlHTTP(req => ({
       schema: schema,
       graphiql: false,
-      context: connector
+      rootValue: postgres
     })
 ));
 
