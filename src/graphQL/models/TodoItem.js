@@ -63,4 +63,10 @@ export default class TodoItem {
 
         return todoItem.rowCount ===1 ? new TodoItem(todoItem.rows[0]) : null;
     }
+
+    static async delete(id: number, db: PostgresConnector): Promise<?TodoItem> {
+
+
+        return null;
+    }
 }

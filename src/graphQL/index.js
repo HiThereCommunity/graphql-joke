@@ -38,15 +38,6 @@ export default new GraphQLSchema({
                 },
                 resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.gen(id, db)
             },
-            createTodo: {
-                type: GraphQLTodoItem,
-                args: {
-                    title: {
-                        type: new GraphQLNonNull(GraphQLString)
-                    }
-                },
-                resolve: (db: PostgresConnector, {title}): Promise<?TodoItem> => TodoItem.write(title, db)
-            },
             getList: {
                 type: GraphQLTodoList,
                 resolve: (db: PostgresConnector, {}): Promise<TodoList> => TodoList.gen(db)
@@ -57,6 +48,15 @@ export default new GraphQLSchema({
     mutation: new GraphQLObjectType({
         name: "Mutations",
         fields: () => ({
+            createTodo: {
+                type: GraphQLTodoItem,
+                args: {
+                    title: {
+                        type: new GraphQLNonNull(GraphQLString)
+                    }
+                },
+                resolve: (db: PostgresConnector, {title}): Promise<?TodoItem> => TodoItem.write(title, db)
+            },
             updateTodo: {
                 type: GraphQLTodoItem,
                 args: {
@@ -68,6 +68,16 @@ export default new GraphQLSchema({
                     }
                 },
                 resolve: (db: PostgresConnector, {id, completed}: {id: string, completed: boolean}): Promise<?TodoItem> => TodoItem.updateItem(id, completed, db)
+            },
+            removeTodo: {
+                type: GraphQLTodoItem,
+                description: "Remove a to do item.",
+                args: {
+                    id: {
+                        type: GraphQLInt
+                    }
+                },
+                resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.delete(id, db)
             }
         })
     })
