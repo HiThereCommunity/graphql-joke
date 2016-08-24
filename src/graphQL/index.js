@@ -17,7 +17,7 @@ import {
 } from 'graphql';
 
 import {TodoItem, TodoList} from "./models";
-var Pool = require('pg').Pool;
+import PostgresConnector from "./../connector";
 
 
 import {GraphQLTodoItem, GraphQLTodoList} from "./graphQLObjects";
@@ -35,7 +35,7 @@ export default new GraphQLSchema({
                         type: GraphQLString
                     }
                 },
-                resolve: (db: Pool, {id}):Promise<?TodoItem> => TodoItem.gen(id, db)
+                resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.gen(id, db)
             },
             createTodo: {
                 type: GraphQLTodoItem,
@@ -44,11 +44,11 @@ export default new GraphQLSchema({
                         type: new GraphQLNonNull(GraphQLString)
                     }
                 },
-                resolve: (db: Pool, {title}): Promise<?TodoItem> => TodoItem.write(title, db)
+                resolve: (db: PostgresConnector, {title}): Promise<?TodoItem> => TodoItem.write(title, db)
             },
             getList: {
                 type: GraphQLTodoList,
-                resolve: (db: Pool, {}): Promise<TodoList> => TodoList.gen(db)
+                resolve: (db: PostgresConnector, {}): Promise<TodoList> => TodoList.gen(db)
 
             }
         })
@@ -66,7 +66,7 @@ export default new GraphQLSchema({
                         type: new GraphQLNonNull(GraphQLBoolean)
                     }
                 },
-                resolve: (db: Pool, {id, completed}: {id: string, completed: boolean}): Promise<?TodoItem> => TodoItem.updateItem(id, completed, db)
+                resolve: (db: PostgresConnector, {id, completed}: {id: string, completed: boolean}): Promise<?TodoItem> => TodoItem.updateItem(id, completed, db)
             }
         })
     })

@@ -1,5 +1,5 @@
 /**
- * Created by dirk-janrutten on 14/08/16.
+ * Created by Dirk-Jan Rutten on 14/08/16.
  */
 
 import Sequelize from "sequelize";
@@ -59,13 +59,21 @@ export default class PostgresConnector {
 
         this._user = user;
         this._todoItem = todoItem;
+
+        this._sequelize.sync({
+            force:false
+        }).then(function() {
+            return todoItem.create({
+                title: 'play tennis'
+            });
+        });
     }
 
-    async synchronizeDB(): Promise {
-        return sequelize.sync({
-            force:false
-        })
-    }
+    //async synchronizeDB(): Promise {
+    //    return this._sequelize.sync({
+    //        force:false
+    //    })
+    //}
 
     getTodoItem() {
         return this._todoItem;

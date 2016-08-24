@@ -27,12 +27,17 @@ let postgres = new PostgresConnector(config);
 /**
  * The GraphiQL endpoint
  */
-app.use(`/graphiql`, graphqlHTTP(req => ({
-      schema: schema,
-      graphiql: true,
-    rootValue: connector
-    })
+app.use(`/graphiql`, graphqlHTTP(async req => {
+    //await postgres.synchronizeDB();
+
+     return {
+        schema: schema,
+        graphiql: true,
+        rootValue: postgres
+     }
+}
 ));
+
 
 /**
  * The single GraphQL Endpoint

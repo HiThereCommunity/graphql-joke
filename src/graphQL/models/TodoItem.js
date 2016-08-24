@@ -10,6 +10,8 @@ type databaseItem = {
     is_done: boolean
 }
 
+import Postgres from "./../../connector";
+
 export default class TodoItem {
 
     _id: string;
