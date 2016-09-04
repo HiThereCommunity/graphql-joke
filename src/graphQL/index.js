@@ -18,10 +18,10 @@ import {
 } from 'graphql';
 
 import {TodoItem, TodoList} from "./models";
-import PostgresConnector from "./../connector";
-
-
 import {GraphQLTodoItem, GraphQLTodoList} from "./graphQLObjects";
+
+import type RootValue from "./types";
+
 
 export default new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -33,14 +33,14 @@ export default new GraphQLSchema({
                 description: "todo item",
                 args: {
                     id: {
-                        type: new GraphQLNonNull(GraphQLInt)
+                        type: new GraphQLNonNull(GraphQLString)
                     }
                 },
-                resolve: (db: PostgresConnector, {id}):Promise<?TodoItem> => TodoItem.gen(id, db)
+                resolve: (root: RootValue, {id}):Promise<?TodoItem> => TodoItem.gen(id, root)
             },
             getList: {
                 type: GraphQLTodoList,
-                resolve: (db: PostgresConnector, {}): Promise<TodoList> => TodoList.gen(db)
+                resolve: (root: RootValue, {}): Promise<TodoList> => TodoList.gen(db, root)
 
             }
         })
@@ -55,7 +55,7 @@ export default new GraphQLSchema({
                         type: new GraphQLNonNull(GraphQLString)
                     }
                 },
-                resolve: (db:PostgresConnector, {title}):Promise<?TodoItem> => TodoItem.write(title, db)
+                resolve: (root: RootValue, {title}):Promise<?TodoItem> => TodoItem.write(title, root)
             },
             updateTodo: {
                 type: GraphQLTodoItem,
@@ -67,7 +67,7 @@ export default new GraphQLSchema({
                         type: new GraphQLNonNull(GraphQLBoolean)
                     }
                 },
-                resolve: (db:PostgresConnector, {id, completed}: {id: number, completed: boolean}):Promise<?TodoItem> => TodoItem.updateItem(id, completed, db)
+                resolve: (root: RootValue, {id, completed}: {id: number, completed: boolean}):Promise<?TodoItem> => TodoItem.updateItem(id, completed, root)
             },
             removeTodo: {
                 type: GraphQLInt,
@@ -77,7 +77,7 @@ export default new GraphQLSchema({
                         type: GraphQLInt
                     }
                 },
-                resolve: (db:PostgresConnector, {id}: {id: number}):Promise<number> => TodoItem.delete(id, db)
+                resolve: (root: RootValue, {id}: {id: number}):Promise<number> => TodoItem.delete(id, root)
             }
         })
     })

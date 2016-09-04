@@ -10,6 +10,10 @@ type databaseItem = {
     is_done: boolean
 }
 
+var uuid = require('node-uuid');
+
+import type RootValue from "./../types";
+
 export default class TodoItem {
 
     _id: string;
@@ -41,21 +45,28 @@ export default class TodoItem {
         });
     }
 
-    static async gen(id: number, db: PostgresConnector): Promise<?TodoItem> {
+    static gen(id: string, root: RootValue): ?TodoItem {
 
-        let todoItem = await db.getTodoItem().findById(id);
+        let todoItem = root.local.getTodoItems().filter(item =>  item.id === id);
 
-        return todoItem ? new TodoItem(todoItem.dataValues) : null;
+        return todoItem.length>0 ? new TodoItem(todoItem[0]) : null;
     }
 
-    static async write(title: string, db: PostgresConnector): Promise<?TodoItem> {
+    static write(title: string, root: RootValue): TodoItem {
 
-        let todoItem = await db.getTodoItem().create({title: title});
 
-        return todoItem ? new TodoItem(todoItem.dataValues) : null;
+        let todoItem = {
+            id: uuid.v4(),
+            title: title,
+            is_done: false
+        };
+
+        root.local.getTodoItems().push(todoItem);
+
+        return new TodoItem(todoItem);
     }
 
-    static async updateItem(id: number, completed: boolean, db: PostgresConnector): Promise<?TodoItem> {
+    static async updateItem(id: number, completed: boolean, root: RootValue): Promise<?TodoItem> {
 
         let todoItem = await db.getTodoItem().findById(id);
 
@@ -66,7 +77,7 @@ export default class TodoItem {
         return new TodoItem(todoItem.dataValues);
     }
 
-    static async delete(id: number, db: PostgresConnector): Promise<number> {
+    static async delete(id: number, root: RootValue): Promise<number> {
 
         let todoItem = await db.getTodoItem().destroy({where: {id: id}});
 

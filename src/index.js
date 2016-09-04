@@ -14,11 +14,14 @@ import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import schema from "./graphQL";
 const app = express();
-import PostgresConnector from "./connector";
 
-let config = require("./../dbConfig.json");
+import ConnectorLocal from "./connectorLocal";
 
-let postgres = new PostgresConnector(config);
+import type RootValue from "./graphQL/types";
+
+let rootValue: RootValue = {
+    local: new ConnectorLocal()
+};
 
 /**
  * The GraphiQL endpoint
@@ -26,7 +29,7 @@ let postgres = new PostgresConnector(config);
 app.use(`/graphiql`, graphqlHTTP(req => ({
         schema: schema,
         graphiql: true,
-        rootValue: postgres
+        rootValue: rootValue
     })
 ));
 
@@ -37,7 +40,7 @@ app.use(`/graphiql`, graphqlHTTP(req => ({
 app.use('/', graphqlHTTP(req => ({
       schema: schema,
       graphiql: false,
-      rootValue: postgres
+      rootValue: rootValue
     })
 ));
 
