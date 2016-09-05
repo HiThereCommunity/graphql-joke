@@ -14,14 +14,28 @@ import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import schema from "./graphQL";
 const app = express();
-
-import ConnectorLocal from "./connectorLocal";
-
 import type RootValue from "./graphQL/types";
+import {TodoItemDB} from "./graphQL/connectors";
 
-let rootValue: RootValue = {
-    local: new ConnectorLocal()
-};
+let todoDB: TodoItemDB = new TodoItemDB();
+
+const createRootValue = (req): RootValue => ({
+    db: {todo: todoDB},
+    viewer: req.user
+});
+
+app.use((req, res, next)=> {
+
+    if (req.query.access_token === "abcdef") {
+        req.user = {
+            id: "1234"
+        };
+        next();
+    }
+    else {
+        return res.status(401).json({error: `Authentication error occurred, enter "abcdef" in the querystring under key "access_token" to get access.`});
+    }
+});
 
 /**
  * The GraphiQL endpoint
@@ -29,7 +43,7 @@ let rootValue: RootValue = {
 app.use(`/graphiql`, graphqlHTTP(req => ({
         schema: schema,
         graphiql: true,
-        rootValue: rootValue
+        rootValue: createRootValue(req)
     })
 ));
 
@@ -40,7 +54,7 @@ app.use(`/graphiql`, graphqlHTTP(req => ({
 app.use('/', graphqlHTTP(req => ({
       schema: schema,
       graphiql: false,
-      rootValue: rootValue
+      rootValue: createRootValue(req)
     })
 ));
 

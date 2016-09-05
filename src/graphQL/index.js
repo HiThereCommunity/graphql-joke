@@ -20,7 +20,7 @@ import {
 import {TodoItem, TodoList} from "./models";
 import {GraphQLTodoItem, GraphQLTodoList} from "./graphQLObjects";
 
-import type RootValue from "./types";
+import type {RootValue} from "./types";
 
 
 export default new GraphQLSchema({
@@ -40,7 +40,7 @@ export default new GraphQLSchema({
             },
             getList: {
                 type: GraphQLTodoList,
-                resolve: (root: RootValue, {}): Promise<TodoList> => TodoList.gen(db, root)
+                resolve: (root: RootValue, {}): Promise<TodoList> => TodoList.gen(root)
 
             }
         })
@@ -61,20 +61,20 @@ export default new GraphQLSchema({
                 type: GraphQLTodoItem,
                 args: {
                     id: {
-                        type: new GraphQLNonNull(GraphQLInt)
+                        type: new GraphQLNonNull(GraphQLString)
                     },
                     completed: {
                         type: new GraphQLNonNull(GraphQLBoolean)
                     }
                 },
-                resolve: (root: RootValue, {id, completed}: {id: number, completed: boolean}):Promise<?TodoItem> => TodoItem.updateItem(id, completed, root)
+                resolve: (root: RootValue, {id, completed}: {id: number, completed: boolean}):Promise<?TodoItem> => TodoItem.update(id, completed, root)
             },
             removeTodo: {
-                type: GraphQLInt,
+                type: GraphQLTodoItem,
                 description: "Remove a to do item from the to do list.",
                 args: {
                     id: {
-                        type: GraphQLInt
+                        type: GraphQLString
                     }
                 },
                 resolve: (root: RootValue, {id}: {id: number}):Promise<number> => TodoItem.delete(id, root)

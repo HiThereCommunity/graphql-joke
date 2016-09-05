@@ -2,8 +2,15 @@
  * Created by dirk-janrutten on 01/09/16.
  */
 
-import ConnectorLocal from "./../../connectorLocal";
+import {TodoItemDB} from "./../connectors";
+
+export type Viewer = {
+    id: string
+}
 
 export type RootValue = {
-    local: ConnectorLocal
+    viewer: Viewer,
+    db: {
+        todo: TodoItemDB
+    }
 }
