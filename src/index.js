@@ -12,38 +12,32 @@ import "babel-polyfill";
 
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
-import schema from "./graphQL";
+import GraphQLSchema from "./graphQL";
 const app = express();
-import type RootValue from "./graphQL/types";
-import {TodoItemDB} from "./graphQL/connectors";
+import type {RootValue} from "./types";
+import {PostgresConnector} from "./connectors";
 
-let todoDB: TodoItemDB = new TodoItemDB();
+import config from '../dbConfig.json';
+
+const connector = new PostgresConnector(config);
 
 const createRootValue = (req): RootValue => ({
-    db: {todo: todoDB},
+    db: connector,
     viewer: req.user
-});
-
-app.use((req, res, next)=> {
-
-    if (req.query.access_token === "abcdef") {
-        req.user = {
-            id: "1234"
-        };
-        next();
-    }
-    else {
-        return res.status(401).json({error: `Authentication error occurred, enter "abcdef" in the querystring under key "access_token" to get access.`});
-    }
 });
 
 /**
  * The GraphiQL endpoint
  */
 app.use(`/graphiql`, graphqlHTTP(req => ({
-        schema: schema,
+        schema: GraphQLSchema,
         graphiql: true,
-        rootValue: createRootValue(req)
+        rootValue: createRootValue(req),
+        formatError: (error) => ({
+          message: error.message,
+          stack: error.stack.split('\n'),
+          locations: error.locations
+        })
     })
 ));
 
@@ -52,7 +46,7 @@ app.use(`/graphiql`, graphqlHTTP(req => ({
  * The single GraphQL Endpoint
  */
 app.use('/', graphqlHTTP(req => ({
-      schema: schema,
+      schema: GraphQLSchema,
       graphiql: false,
       rootValue: createRootValue(req)
     })
@@ -69,7 +63,7 @@ switch(environment){
         port = 3000;
         break;
     default:
-        throw new Error(`Unrecognized environment ${environment}`);
+        throw new Error(`Unrecognized environment ${String(environment)}`);
 }
 
 app.listen(port, function () {
