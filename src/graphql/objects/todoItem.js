@@ -10,22 +10,15 @@ import {
     GraphQLBoolean,
     GraphQLNonNull
 } from 'graphql'
+import {globalIdField} from 'graphql-relay'
 
-import {
-  globalIdField
-} from 'graphql-relay'
-
-import {
-  nodeInterface
-} from '../relay'
-
+import {nodeInterface} from './relayNode'
 import {TodoItem} from '../../models'
-
 import type {GraphQLIDOutput} from '../type'
 
 export default new GraphQLObjectType({
   name: 'TodoItem',
-  description: 'Represents a single todo item',
+  description: 'Represents a todo item.',
   fields: () => ({
     id: globalIdField(
           'TodoItem',

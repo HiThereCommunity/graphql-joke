@@ -15,6 +15,7 @@ import {TodoItem} from '../../models'
 
 export default mutationWithClientMutationId({
   name: 'DeleteTodoItem',
+  description: 'Delete a todo item.',
   inputFields: {
     todoId: {
       type: new GraphQLNonNull(GraphQLID)

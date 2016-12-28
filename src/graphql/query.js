@@ -4,16 +4,17 @@ import {
   GraphQLNonNull
 } from 'graphql'
 
-import { nodeField } from './relay'
+import {
+  nodeField,
+  GraphQLTodoList
+} from './objects'
 
 import {TodoList} from '../models'
-import {GraphQLTodoList} from './objects'
-
 import type {RootValue} from '../types'
 
 export default new GraphQLObjectType({
   name: 'Query',
-  description: 'All the queries that can be used to retrieve data',
+  description: 'The query root.',
   fields: () => ({
     node: nodeField,
     todoList: {

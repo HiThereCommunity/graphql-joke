@@ -13,7 +13,7 @@ import {
 
 import {
   nodeInterface
-} from '../relay'
+} from './relayNode'
 
 import GraphQLTodoItem from './todoItem'
 import {TodoList} from '../../models'
@@ -24,6 +24,7 @@ let {connectionType: TodoItemConnection} =
 
 export default new GraphQLObjectType({
   name: 'TodoList',
+  description: 'Represents the list of todo items.',
   fields: () => ({
     id: globalIdField(
         'TodoList',
@@ -31,16 +32,19 @@ export default new GraphQLObjectType({
       ),
     items: {
       type: TodoItemConnection,
+      description: 'All the todo items.',
       args: connectionArgs,
       resolve: (todoList: TodoList, args) => connectionFromPromisedArray(todoList.getAll(), args)
     },
     completed: {
       type: TodoItemConnection,
+      description: 'The completed todo items.',
       args: connectionArgs,
       resolve: (todoList: TodoList, args) => connectionFromPromisedArray(todoList.getCompleted(), args)
     },
     active: {
       type: TodoItemConnection,
+      description: 'The active todo items.',
       args: connectionArgs,
       resolve: (todoList: TodoList, args) => connectionFromPromisedArray(todoList.getActive(), args)
     }

@@ -7,6 +7,7 @@ import GraphQLMutationDeleteTodo from './deleteTodo'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
+  description: 'The root query for implementing GraphQL mutations.',
   fields: () => ({
     addTodo: GraphQLMutationCreateTodo,
     updateTodo: GraphQLMutationUpdateTodo,

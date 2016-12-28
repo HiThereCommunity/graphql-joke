@@ -14,6 +14,7 @@ import {TodoItem} from '../../models'
 
 export default mutationWithClientMutationId({
   name: 'AddTodoItem',
+  description: 'Add a new todo item.',
   inputFields: {
     title: {
       type: new GraphQLNonNull(GraphQLString)

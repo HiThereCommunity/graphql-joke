@@ -8,7 +8,7 @@ import {
 import {
   TodoItem,
   TodoList
-} from '../models'
+} from '../../models'
 
 /**
  * We get the node interface and field from the relay library.

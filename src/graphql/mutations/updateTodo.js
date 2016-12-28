@@ -16,6 +16,7 @@ import {TodoItem} from '../../models'
 
 export default mutationWithClientMutationId({
   name: 'UpdateTodoItem',
+  description: 'Update a todo item.',
   inputFields: {
     todoId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -31,7 +32,7 @@ export default mutationWithClientMutationId({
     }
   },
   mutateAndGetPayload: async ({todoId, completed}, context, {rootValue}) => {
-    const {id} = fromGlobalId(todoId)
+    let {id} = fromGlobalId(todoId)
     const updatedTodo = await TodoItem.update(id, completed, rootValue)
     return {
       todo: updatedTodo
