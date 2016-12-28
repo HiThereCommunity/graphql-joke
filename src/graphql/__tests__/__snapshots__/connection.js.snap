@@ -1,0 +1,122 @@
+exports[`GraphQL connections fetches all the todos in the list 1`] = `
+Object {
+  "data": Object {
+    "todoList": Object {
+      "active": Object {
+        "edges": Array [
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjA=",
+            "node": Object {
+              "completed": false,
+              "id": "VG9kb0l0ZW06MQ==",
+              "title": "todo 1",
+            },
+          },
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjE=",
+            "node": Object {
+              "completed": false,
+              "id": "VG9kb0l0ZW06Mw==",
+              "title": "todo 3",
+            },
+          },
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjI=",
+            "node": Object {
+              "completed": false,
+              "id": "VG9kb0l0ZW06NA==",
+              "title": "todo 4",
+            },
+          },
+        ],
+      },
+      "completed": Object {
+        "edges": Array [
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjA=",
+            "node": Object {
+              "completed": true,
+              "id": "VG9kb0l0ZW06Mg==",
+              "title": "todo 2",
+            },
+          },
+        ],
+      },
+      "items": Object {
+        "edges": Array [
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjA=",
+            "node": Object {
+              "completed": false,
+              "id": "VG9kb0l0ZW06MQ==",
+              "title": "todo 1",
+            },
+          },
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjE=",
+            "node": Object {
+              "completed": true,
+              "id": "VG9kb0l0ZW06Mg==",
+              "title": "todo 2",
+            },
+          },
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjI=",
+            "node": Object {
+              "completed": false,
+              "id": "VG9kb0l0ZW06Mw==",
+              "title": "todo 3",
+            },
+          },
+          Object {
+            "cursor": "YXJyYXljb25uZWN0aW9uOjM=",
+            "node": Object {
+              "completed": false,
+              "id": "VG9kb0l0ZW06NA==",
+              "title": "todo 4",
+            },
+          },
+        ],
+      },
+    },
+  },
+}
+`;
+
+exports[`GraphQL connections fetches no todos at the end of the list 1`] = `
+Object {
+  "data": Object {
+    "todoList": Object {
+      "items": Object {
+        "edges": Array [],
+      },
+    },
+  },
+}
+`;
+
+exports[`GraphQL connections fetches the first todo in the list after a cursor 1`] = `
+Object {
+  "data": Object {
+    "todoList": Object {
+      "items": Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "completed": true,
+              "id": "VG9kb0l0ZW06Mg==",
+              "title": "todo 2",
+            },
+          },
+        ],
+        "pageInfo": Object {
+          "endCursor": "YXJyYXljb25uZWN0aW9uOjE=",
+          "hasNextPage": true,
+          "hasPreviousPage": false,
+          "startCursor": "YXJyYXljb25uZWN0aW9uOjE=",
+        },
+      },
+    },
+  },
+}
+`;
