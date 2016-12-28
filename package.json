@@ -1,11 +1,11 @@
 {
   "name": "todo-list",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "Example of a graphql todo-list server",
   "scripts": {
     "start": "NODE_ENV=development nodemon src/index.js --exec babel-node",
     "build": "babel src --ignore __tests__ --out-dir dist/",
-    "serve": "sudo NODE_ENV=production node dist/index.js",
+    "serve": "NODE_ENV=production node dist/index.js",
     "watch": "jest --watch --runInBand",
     "test": "jest --forceExit --runInBand",
     "check": "flow check",
@@ -14,7 +14,7 @@
     "fix": "standard --fix"
   },
   "engines": {
-    "node": "4.x || 5.x || 6.x",
+    "node": "4.x || 5.x || 6.x || 7.x",
     "npm": "2.x || 3.x"
   },
   "keywords": [

@@ -16,9 +16,9 @@ import GraphQLSchema from './graphql'
 import type {RootValue} from './types'
 import {PostgresConnector} from './connectors'
 
-import config from '../dbConfig.json'
+import config from './config'
 
-const connector = new PostgresConnector(config)
+const connector = new PostgresConnector(config.db)
 
 const createRootValue = (req): RootValue => ({
   db: connector,
@@ -27,6 +27,24 @@ const createRootValue = (req): RootValue => ({
 
 const app = express()
 
+const formatError = (error) => {
+  if (config.environment === 'development') {
+    return {
+      message: error.message,
+      stack: error.stack.split('\n'),
+      locations: error.locations,
+      path: error.path
+    }
+  } else if (config.environment === 'production') {
+    return {
+      message: error.message,
+      locations: error.locations,
+      path: error.path
+
+    }
+  }
+}
+
 /**
  * The GraphiQL endpoint
  */
@@ -34,13 +52,8 @@ app.use(`/graphiql`, graphqlHTTP(req => ({
   schema: GraphQLSchema,
   graphiql: true,
   rootValue: createRootValue(req),
-  formatError: (error) => ({
-    message: error.message,
-    stack: error.stack.split('\n'),
-    locations: error.locations
-  })
-})
-))
+  formatError
+})))
 
 /**
  * The single GraphQL Endpoint
@@ -48,24 +61,10 @@ app.use(`/graphiql`, graphqlHTTP(req => ({
 app.use('/', graphqlHTTP(req => ({
   schema: GraphQLSchema,
   graphiql: false,
-  rootValue: createRootValue(req)
-})
-))
+  rootValue: createRootValue(req),
+  formatError
+})))
 
-const environment = process.env.NODE_ENV
-
-var port
-switch (environment) {
-  case 'production':
-    port = 80
-    break
-  case 'development':
-    port = 3000
-    break
-  default:
-    throw new Error(`Unrecognized environment ${String(environment)}`)
-}
-
-app.listen(port, function () {
-  console.log(`Server running on port ${port}`)
+app.listen(config.port, function () {
+  console.log(`Server running on port ${config.port}`)
 })
