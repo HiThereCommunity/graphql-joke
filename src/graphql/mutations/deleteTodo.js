@@ -3,23 +3,18 @@
 import {
   mutationWithClientMutationId,
   fromGlobalId
-} from 'graphql-relay';
+} from 'graphql-relay'
 
 import {
-    GraphQLString,
-    GraphQLObjectType,
-    GraphQLSchema,
     GraphQLNonNull,
-    GraphQLBoolean,
-    GraphQLInt,
     GraphQLID
-} from 'graphql';
+} from 'graphql'
 
-import {GraphQLTodoItem} from '../objects';
-import {TodoItem} from '../../models';
+import {GraphQLTodoItem} from '../objects'
+import {TodoItem} from '../../models'
 
 export default mutationWithClientMutationId({
-  name: "DeleteTodoItem",
+  name: 'DeleteTodoItem',
   inputFields: {
     todoId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -36,11 +31,11 @@ export default mutationWithClientMutationId({
     }
   },
   mutateAndGetPayload: async ({todoId, completed}, context, {rootValue}) => {
-    const {id} = fromGlobalId(todoId);
-    const deletedTodo = await TodoItem.delete(id, rootValue);
+    const {id} = fromGlobalId(todoId)
+    const deletedTodo = await TodoItem.delete(id, rootValue)
     return {
       todo: deletedTodo,
       id: todoId
     }
   }
-});
+})

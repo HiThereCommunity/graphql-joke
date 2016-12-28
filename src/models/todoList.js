@@ -1,47 +1,47 @@
 // @flow
 
-import TodoItem from './todoItem';
-import type {RootValue} from '../types';
+import TodoItem from './todoItem'
+import type {RootValue} from '../types'
 
-const todoListId = "TodoListId";
+const todoListId = 'TodoListId'
 
 export default class TodoList {
 
   _root: RootValue;
 
-  static gen(id: string, root: RootValue): ?TodoList {
-    return id === todoListId ? new TodoList(root) : null;
+  static gen (id: string, root: RootValue): ?TodoList {
+    return id === todoListId ? new TodoList(root) : null
   }
 
-  constructor(root: RootValue) {
-    this._root = root;
+  constructor (root: RootValue) {
+    this._root = root
   }
 
-  getId(): string {
-    return todoListId;
+  getId (): string {
+    return todoListId
   }
 
-  async getAll(): Promise<Array<TodoItem>> {
-    const allTodos = await this._root.db.getTodoItemEntity().findAll();
-    return allTodos.map(todoDB => new TodoItem(todoDB));
+  async getAll (): Promise<Array<TodoItem>> {
+    const allTodos = await this._root.db.getTodoItemEntity().findAll()
+    return allTodos.map(todoDB => new TodoItem(todoDB))
   }
 
-  async getCompleted(): Promise<Array<TodoItem>>{
+  async getCompleted (): Promise<Array<TodoItem>> {
     const completedTodos = await this._root.db.getTodoItemEntity().findAll({
       where: {
-        is_done: true
+        completed: true
       }
-    });
-    return completedTodos.map(todoDB => new TodoItem(todoDB));
+    })
+    return completedTodos.map(todoDB => new TodoItem(todoDB))
   }
 
-  async getActive(): Promise<Array<TodoItem>> {
+  async getActive (): Promise<Array<TodoItem>> {
     const activeTodos = await this._root.db.getTodoItemEntity().findAll({
       where: {
-        is_done: false
+        completed: false
       }
-    });
-    return activeTodos.map(todoDB => new TodoItem(todoDB));
+    })
+    return activeTodos.map(todoDB => new TodoItem(todoDB))
   }
 
 }

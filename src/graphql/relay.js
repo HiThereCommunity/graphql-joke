@@ -3,12 +3,12 @@
 import {
   nodeDefinitions,
   fromGlobalId
-} from 'graphql-relay';
+} from 'graphql-relay'
 
 import {
   TodoItem,
   TodoList
-} from '../models';
+} from '../models'
 
 /**
  * We get the node interface and field from the relay library.
@@ -18,14 +18,14 @@ import {
  */
 export const { nodeInterface, nodeField } = nodeDefinitions(
   (globalId, context, {rootValue}) => {
-    const { type, id } = fromGlobalId(globalId);
+    const { type, id } = fromGlobalId(globalId)
 
     if (type === 'TodoItem') {
-      return TodoItem.gen(id, rootValue);
+      return TodoItem.gen(id, rootValue)
     }
     if (type === 'TodoList') {
-      return TodoList.gen(id, rootValue);
+      return TodoList.gen(id, rootValue)
     }
-    return null;
+    return null
   }
-);
+)

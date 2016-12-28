@@ -8,17 +8,12 @@
  *
  */
 
- import {GraphQLSchema} from 'graphql';
+ import {GraphQLSchema} from 'graphql'
 
- import {TodoItem} from "../models";
- import {GraphQLTodoItem} from "./objects";
-
- import type {RootValue} from "../types";
-
- import query from './query';
- import mutation from './mutations';
+ import query from './query'
+ import mutation from './mutations'
 
  export default new GraphQLSchema({
-     query,
-     mutation
- });
+   query,
+   mutation
+ })

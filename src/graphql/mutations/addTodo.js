@@ -2,22 +2,18 @@
 
 import {
   mutationWithClientMutationId
-} from 'graphql-relay';
+} from 'graphql-relay'
 
 import {
     GraphQLString,
-    GraphQLObjectType,
-    GraphQLSchema,
-    GraphQLNonNull,
-    GraphQLBoolean,
-    GraphQLInt
-} from 'graphql';
+    GraphQLNonNull
+} from 'graphql'
 
-import {GraphQLTodoItem} from '../objects';
-import {TodoItem} from '../../models';
+import {GraphQLTodoItem} from '../objects'
+import {TodoItem} from '../../models'
 
 export default mutationWithClientMutationId({
-  name: "AddTodoItem",
+  name: 'AddTodoItem',
   inputFields: {
     title: {
       type: new GraphQLNonNull(GraphQLString)
@@ -30,9 +26,9 @@ export default mutationWithClientMutationId({
     }
   },
   mutateAndGetPayload: async ({title}, context, {rootValue}) => {
-    const newTodo = await TodoItem.write(title, rootValue);
+    const newTodo = await TodoItem.write(title, rootValue)
     return {
       todo: newTodo
     }
   }
-});
+})

@@ -8,41 +8,40 @@ import {
     GraphQLString,
     GraphQLObjectType,
     GraphQLBoolean,
-    GraphQLID,
     GraphQLNonNull
-} from 'graphql';
+} from 'graphql'
 
 import {
   globalIdField
-} from 'graphql-relay';
+} from 'graphql-relay'
 
 import {
   nodeInterface
-} from '../relay';
+} from '../relay'
 
-import {TodoItem} from "../../models";
+import {TodoItem} from '../../models'
 
-import type {GraphQLIDOutput} from '../type';
+import type {GraphQLIDOutput} from '../type'
 
 export default new GraphQLObjectType({
-    name: "TodoItem",
-    description: "Represents a single todo item",
-    fields: () => ({
-        id: globalIdField(
+  name: 'TodoItem',
+  description: 'Represents a single todo item',
+  fields: () => ({
+    id: globalIdField(
           'TodoItem',
           (todoItem: TodoItem): GraphQLIDOutput => todoItem.getId()
         ),
-        title: {
-            type: new GraphQLNonNull(GraphQLString),
-            resolve: (todoItem: TodoItem): string => todoItem.getTitle()
-        },
-        completed: {
-            type: new GraphQLNonNull(GraphQLBoolean),
-            resolve: (todoItem: TodoItem): boolean => todoItem.getCompleted()
-        }
-    }),
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: (todoItem: TodoItem): string => todoItem.getTitle()
+    },
+    completed: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (todoItem: TodoItem): boolean => todoItem.getCompleted()
+    }
+  }),
     // Relay will use this function to determine if an object in your system is
     // of a particular GraphQL type
-    isTypeOf: function(obj) { return obj instanceof TodoItem },
-    interfaces: [ nodeInterface ]
-});
+  isTypeOf: function (obj) { return obj instanceof TodoItem },
+  interfaces: [ nodeInterface ]
+})
