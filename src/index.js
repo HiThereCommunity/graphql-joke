@@ -12,7 +12,7 @@ import 'babel-polyfill'
 
 import express from 'express'
 import graphqlHTTP from 'express-graphql'
-import GraphQLSchema from './graphqL'
+import GraphQLSchema from './graphql'
 import type {RootValue} from './types'
 import {PostgresConnector} from './connectors'
 
