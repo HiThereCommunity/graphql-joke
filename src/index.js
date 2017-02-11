@@ -12,17 +12,32 @@ import 'babel-polyfill'
 
 import express from 'express'
 import graphqlHTTP from 'express-graphql'
-import { schema, type Context } from './graphql'
-import {TodoItemConnector, connect} from './connectors'
+import { schema } from './graphql'
+import type {Context} from './graphql'
+import { TodoItemConnector, UserConnector, connect } from './connectors'
+import { User } from './models'
 
-import config from './config'
-
+import config from './config';
 const sequelize = connect(config.db);
 sequelize.sync({force: false});
 
-const createContext = (): Context => ({
-  todoItemConnector: new TodoItemConnector(sequelize),
-})
+
+const createDBUser = async (sequalize): Promise<User> => {
+
+  const userConnector = new UserConnector(sequelize);
+  let user = await sequelize.models.user.findOne({id: 1});
+  if (!user) user = await sequelize.models.user.create({name: 'Bob', id: 1});
+
+  return new User(user, userConnector);
+}
+
+const createContext = async (): Promise<Context> => {
+  let user = await createDBUser(sequelize);
+  return {
+    todoItemConnector: new TodoItemConnector(sequelize),
+    viewer: user
+  }
+}
 
 const app = express()
 
@@ -39,7 +54,6 @@ const formatError = (error) => {
       message: error.message,
       locations: error.locations,
       path: error.path
-
     }
   }
 }
@@ -47,20 +61,20 @@ const formatError = (error) => {
 /**
  * The GraphiQL endpoint
  */
-app.use(`/graphiql`, graphqlHTTP(req => ({
+app.use(`/graphiql`, graphqlHTTP(async req => ({
   schema,
   graphiql: true,
-  context: createContext(),
+  context: await createContext(),
   formatError
 })))
 
 /**
  * The single GraphQL Endpoint
  */
-app.use('/', graphqlHTTP(req => ({
+app.use('/', graphqlHTTP(async req => ({
   schema,
   graphiql: false,
-  rootValue: createContext(),
+  context: await createContext(),
   formatError
 })))
 

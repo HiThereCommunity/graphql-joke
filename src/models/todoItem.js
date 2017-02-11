@@ -3,12 +3,8 @@
  * Created by Dirk-Jan Rutten on 13/08/16.
  */
 
-import type {TodoItemEntity} from './../connectors'
-import type {RootValue} from './../types'
-
-import { PostgresConnector } from '../connectors';
-import DataLoader from 'dataloader';
-
+import {TodoItemConnector} from '../connectors';
+import User from './User'
 export default class TodoItem {
 
   static initializeFromData (id: number, title: string, completed: boolean): TodoItem {
@@ -19,17 +15,20 @@ export default class TodoItem {
     })
   }
 
-  static async gen (id: string, loader: DataLoader<string, Object>): Promise<?TodoItem> {
-    const todoItem = await loader.load(id);
+  static async gen (id: string, todoConnector: TodoItemConnector): Promise<?TodoItem> {
+    
+    const todoItem = await todoConnector.fetch(id);
     return todoItem ? new TodoItem(todoItem) : null
   }
 
-  static async write (title: string, db: PostgresConnector): Promise<TodoItem> {
-    const newTodoItem = await db.getTodoItemEntity().create({
+  static async write (title: string, todoConnector: TodoItemConnector, user: User): Promise<TodoItem> {
+
+    const newTodoItem = await todoConnector.getEntity().create({
       title,
-      completed: false
-    })
-    return new TodoItem(newTodoItem)
+      completed: false,
+      user_account: user.getId()
+    });
+    return new TodoItem(newTodoItem);
   }
 
   _todoEntity: Object;
@@ -41,9 +40,11 @@ export default class TodoItem {
   getId (): string {
     return String(this._todoEntity.id)
   }
+
   getTitle (): string {
     return this._todoEntity.title
   }
+
   getCompleted (): boolean {
     return this._todoEntity.completed
   }

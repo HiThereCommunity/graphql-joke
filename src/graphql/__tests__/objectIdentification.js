@@ -1,4 +1,4 @@
-// @flow
+
 import { testDBConnection } from '../../testUtils'
 import {PostgresConnector} from '../../connectors'
 import { graphql } from 'graphql'

@@ -22,6 +22,13 @@ Run the server in development on `linux` using the following command
 $ npm run start
 ```
 
+**Note:** Do not forget to set the following environmental variables of your MySQl/PostgresQL db before starting the server:
+
+* `DB_HOST`
+* `DB_USER`
+* `DB_PASSWORD`
+* `DB_DATABASE`
+
 For windows run
 
 ```
@@ -102,4 +109,3 @@ In addition, you can also use [GraphiQL](https://github.com/graphql/graphiql) fo
  ```
 http://localhost:3000/graphiql
  ```
-

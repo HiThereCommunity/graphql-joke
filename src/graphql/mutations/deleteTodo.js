@@ -1,30 +1,17 @@
 // @flow
 
-import {
-  mutationWithClientMutationId,
-  fromGlobalId
-} from 'graphql-relay'
+import { mutationWithClientMutationId, fromGlobalId } from "graphql-relay";
+import { GraphQLNonNull, GraphQLID } from "graphql";
+import { GraphQLTodoItem } from "../objects";
+import { TodoItem } from "../../models";
+import type { Context } from "../type";
 
-import {
-    GraphQLNonNull,
-    GraphQLID
-} from 'graphql'
-
-import {GraphQLTodoItem} from '../objects'
-import {TodoItem} from '../../models'
-
-type Payload = {
-  todo: TodoItem
-}
+type Payload = { todo: TodoItem };
 
 export default mutationWithClientMutationId({
-  name: 'DeleteTodoItem',
-  description: 'Delete a todo item.',
-  inputFields: {
-    todoId: {
-      type: new GraphQLNonNull(GraphQLID)
-    }
-  },
+  name: "DeleteTodoItem",
+  description: "Delete a todo item.",
+  inputFields: { todoId: { type: new GraphQLNonNull(GraphQLID) } },
   outputFields: {
     todo: {
       type: new GraphQLNonNull(GraphQLTodoItem),
@@ -32,16 +19,18 @@ export default mutationWithClientMutationId({
       resolve: (payload: Payload): TodoItem => payload.todo
     }
   },
-  mutateAndGetPayload: async ({todoId, completed}, context, {rootValue}): Promise<Payload> => {
-    const {id} = fromGlobalId(todoId)
-    const todo = await TodoItem.gen(id, rootValue);
-    if (!todo) {
-      throw new Error(`Todo item with id ${id} does not exist`);
-    }
+  mutateAndGetPayload: async (
+    { todoId, completed },
+    context: Context
+  ): Promise<Payload> =>
+    {
+      const { id } = fromGlobalId(todoId);
+      const todo = await TodoItem.gen(id, context.todoItemConnector);
+      if (!todo) {
+        throw new Error(`Todo item with id ${id} does not exist`);
+      }
 
-    await todo.destroy(id, rootValue)
-    return {
-      todo,
+      await todo.destroy(id);
+      return { todo };
     }
-  }
-})
+});

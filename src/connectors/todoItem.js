@@ -6,29 +6,25 @@ import Sequelize from 'sequelize';
 export default class TodoItemConnector {
 
   _loader: DataLoader<string, Object>
-
-  model: Object;
+  _model: Object;
 
   constructor(sequelize: Object) {
 
     this._loader = new DataLoader(ids =>
-      todoItem.findAll({
+      sequelize.models.todo_item.findAll({
         where: {
           id: { $in: ids }
         }
       })
     )
-
-    this.model = todoItem;
+    this._model = sequelize.models.todo_item;
   }
 
   fetch(id: string): Promise<Object> {
     return this._loader.load(id);
   }
 
-  write(title: string): Promise<Object> {
-    return this.model.create({title});
+  getEntity(): Object {
+    return this._model;
   }
-
-
 }

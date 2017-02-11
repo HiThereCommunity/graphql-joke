@@ -1,28 +1,20 @@
 // @flow
-import {
-  GraphQLObjectType,
-  GraphQLNonNull
-} from 'graphql'
+import { GraphQLObjectType, GraphQLNonNull } from "graphql";
+import { nodeField, nodesField, GraphQLUser } from "./objects";
+import { User } from '../models'
+import type { Context } from "./type";
 
-import {
-  nodeField,
-  nodesField,
-  GraphQLTodoList
-} from './objects'
-
-import {TodoList} from '../models'
-import type {RootValue} from '../types'
 
 export default new GraphQLObjectType({
-  name: 'Query',
-  description: 'The query root.',
+  name: "Query",
+  description: "The query root.",
   fields: () => ({
     node: nodeField,
     nodes: nodesField,
-    todoList: {
-      type: new GraphQLNonNull(GraphQLTodoList),
-      description: 'The list of todo items',
-      resolve: (root: RootValue): TodoList => new TodoList(root)
+    viewer: {
+      type: new GraphQLNonNull(GraphQLUser),
+      description: "The currently authenticated user.",
+      resolve: (root: Object, args: Object, context: Context): User => context.viewer
     }
   })
-})
+});

@@ -18,4 +18,4 @@
    mutation
  });
 
- export type { Context } from './type';
+ export type { TodoItemConnector, UserConnector, Context } from './type';

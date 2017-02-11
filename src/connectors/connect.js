@@ -30,7 +30,14 @@ export default (config: configType) => {
     options
   );
 
-  sequelize.define('todo_item', {
+  sequelize.define('user', {
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false
+    }
+  });
+
+  const todoItem = sequelize.define('todo_item', {
     title: {
       type: Sequelize.STRING,
       allowNull: false
@@ -39,6 +46,14 @@ export default (config: configType) => {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    }
+  });
+
+  todoItem.belongsTo(sequelize.models.user, {
+    foreignKey: {
+      name: "user_account",
+      allowNull: false,
+      targetKey: "id"
     }
   });
 

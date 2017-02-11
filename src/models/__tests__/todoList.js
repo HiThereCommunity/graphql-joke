@@ -1,4 +1,4 @@
-// @flow
+
 import TodoList from '../todoList'
 import { testDBConnection } from '../../testUtils'
 import {PostgresConnector} from '../../connectors'

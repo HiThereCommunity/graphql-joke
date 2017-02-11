@@ -1,19 +1,19 @@
 // @flow
 
 import TodoItem from './todoItem'
-import type {RootValue} from '../types'
+import type {TodoItemConnector} from '../graphql'
 
 const todoListId = 'TodoListId'
 
 export default class TodoList {
 
-  _root: RootValue;
+  _root: TodoItemConnector;
 
-  static gen (id: string, root: RootValue): ?TodoList {
+  static gen (id: string, root: TodoItemConnector): ?TodoList {
     return id === todoListId ? new TodoList(root) : null
   }
 
-  constructor (root: RootValue) {
+  constructor (root: TodoItemConnector) {
     this._root = root
   }
 
@@ -22,12 +22,14 @@ export default class TodoList {
   }
 
   async getAll (): Promise<Array<TodoItem>> {
-    const allTodos = await this._root.db.getTodoItemEntity().findAll()
+
+    const allTodos = await this._root.getEntity().findAll()
     return allTodos.map(todoDB => new TodoItem(todoDB))
   }
 
   async getCompleted (): Promise<Array<TodoItem>> {
-    const completedTodos = await this._root.db.getTodoItemEntity().findAll({
+
+    const completedTodos = await this._root.getEntity().findAll({
       where: {
         completed: true
       }
@@ -36,12 +38,11 @@ export default class TodoList {
   }
 
   async getActive (): Promise<Array<TodoItem>> {
-    const activeTodos = await this._root.db.getTodoItemEntity().findAll({
+    const activeTodos = await this._root.getEntity().findAll({
       where: {
         completed: false
       }
     })
     return activeTodos.map(todoDB => new TodoItem(todoDB))
   }
-
 }

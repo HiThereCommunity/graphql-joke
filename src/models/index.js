@@ -6,3 +6,4 @@
 
 export {default as TodoItem} from './todoItem'
 export {default as TodoList} from './todoList'
+export {default as User} from './user'
