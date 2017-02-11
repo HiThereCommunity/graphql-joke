@@ -7,5 +7,6 @@
 export {default as GraphQLTodoItem} from './todoItem'
 export {default as GraphQLTodoList} from './todoList'
 export {
-  nodeField
+  nodeField,
+  nodesField
 } from './relayNode'

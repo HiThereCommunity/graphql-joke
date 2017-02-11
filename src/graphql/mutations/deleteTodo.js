@@ -13,6 +13,10 @@ import {
 import {GraphQLTodoItem} from '../objects'
 import {TodoItem} from '../../models'
 
+type Payload = {
+  todo: TodoItem
+}
+
 export default mutationWithClientMutationId({
   name: 'DeleteTodoItem',
   description: 'Delete a todo item.',
@@ -22,21 +26,22 @@ export default mutationWithClientMutationId({
     }
   },
   outputFields: {
-    deletedTodoId: {
-      type: new GraphQLNonNull(GraphQLID),
-      resolve: (payload) => payload.id
-    },
-    deletedTodo: {
+    todo: {
       type: new GraphQLNonNull(GraphQLTodoItem),
-      resolve: (payload) => payload.todo
+      description: "The deleted todo",
+      resolve: (payload: Payload): TodoItem => payload.todo
     }
   },
-  mutateAndGetPayload: async ({todoId, completed}, context, {rootValue}) => {
+  mutateAndGetPayload: async ({todoId, completed}, context, {rootValue}): Promise<Payload> => {
     const {id} = fromGlobalId(todoId)
-    const deletedTodo = await TodoItem.delete(id, rootValue)
+    const todo = await TodoItem.gen(id, rootValue);
+    if (!todo) {
+      throw new Error(`Todo item with id ${id} does not exist`);
+    }
+
+    await todo.destroy(id, rootValue)
     return {
-      todo: deletedTodo,
-      id: todoId
+      todo,
     }
   }
 })

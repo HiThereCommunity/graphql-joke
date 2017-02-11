@@ -13,7 +13,9 @@
  import query from './query'
  import mutation from './mutations'
 
- export default new GraphQLSchema({
+ export const schema = new GraphQLSchema({
    query,
    mutation
- })
+ });
+
+ export type { Context } from './type';

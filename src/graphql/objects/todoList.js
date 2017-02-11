@@ -17,7 +17,7 @@ import {
 
 import GraphQLTodoItem from './todoItem'
 import {TodoList} from '../../models'
-import type {GraphQLIDOutput} from '../type'
+import type {ID} from '../type'
 
 let {connectionType: TodoItemConnection} =
   connectionDefinitions({nodeType: GraphQLTodoItem})
@@ -28,7 +28,7 @@ export default new GraphQLObjectType({
   fields: () => ({
     id: globalIdField(
         'TodoList',
-        (todoList: TodoList): GraphQLIDOutput => todoList.getId()
+        (todoList: TodoList): ID => todoList.getId()
       ),
     items: {
       type: TodoItemConnection,

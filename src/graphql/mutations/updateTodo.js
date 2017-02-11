@@ -14,6 +14,10 @@ import {
 import {GraphQLTodoItem} from '../objects'
 import {TodoItem} from '../../models'
 
+type Payload = {
+  todo: TodoItem
+}
+
 export default mutationWithClientMutationId({
   name: 'UpdateTodoItem',
   description: 'Update a todo item.',
@@ -28,14 +32,19 @@ export default mutationWithClientMutationId({
   outputFields: {
     updatedTodo: {
       type: new GraphQLNonNull(GraphQLTodoItem),
-      resolve: (payload) => payload.todo
+      resolve: (payload: Payload): TodoItem => payload.todo
     }
   },
-  mutateAndGetPayload: async ({todoId, completed}, context, {rootValue}) => {
-    let {id} = fromGlobalId(todoId)
-    const updatedTodo = await TodoItem.update(id, completed, rootValue)
+  mutateAndGetPayload: async ({todoId, completed}, context, {rootValue}): Promise<Payload> => {
+    const {id} = fromGlobalId(todoId)
+
+    const todo = await TodoItem.gen(id, rootValue);
+    if (!todo) {
+      throw new Error(`Could not find a todo with id ${id}.`);
+    }
+    await todo.update(completed)
     return {
-      todo: updatedTodo
+      todo
     }
   }
 })

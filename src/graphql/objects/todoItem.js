@@ -14,7 +14,7 @@ import {globalIdField} from 'graphql-relay'
 
 import {nodeInterface} from './relayNode'
 import {TodoItem} from '../../models'
-import type {GraphQLIDOutput} from '../type'
+import type {ID} from '../type'
 
 export default new GraphQLObjectType({
   name: 'TodoItem',
@@ -22,7 +22,7 @@ export default new GraphQLObjectType({
   fields: () => ({
     id: globalIdField(
           'TodoItem',
-          (todoItem: TodoItem): GraphQLIDOutput => todoItem.getId()
+          (todoItem: TodoItem): ID => todoItem.getId()
         ),
     title: {
       type: new GraphQLNonNull(GraphQLString),

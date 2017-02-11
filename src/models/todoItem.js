@@ -6,6 +6,9 @@
 import type {TodoItemEntity} from './../connectors'
 import type {RootValue} from './../types'
 
+import { PostgresConnector } from '../connectors';
+import DataLoader from 'dataloader';
+
 export default class TodoItem {
 
   static initializeFromData (id: number, title: string, completed: boolean): TodoItem {
@@ -16,52 +19,41 @@ export default class TodoItem {
     })
   }
 
-  static async gen (id: string, {db}: RootValue): Promise<?TodoItem> {
-    const todoItem = await db.getTodoItemEntity().findById(id)
+  static async gen (id: string, loader: DataLoader<string, Object>): Promise<?TodoItem> {
+    const todoItem = await loader.load(id);
     return todoItem ? new TodoItem(todoItem) : null
   }
 
-  static async write (title: string, {db}: RootValue): Promise<?TodoItem> {
+  static async write (title: string, db: PostgresConnector): Promise<TodoItem> {
     const newTodoItem = await db.getTodoItemEntity().create({
       title,
       completed: false
     })
-    return newTodoItem ? new TodoItem(newTodoItem) : null
+    return new TodoItem(newTodoItem)
   }
 
-  static async update (id: string, completed: boolean, {db}: RootValue): Promise<?TodoItem> {
-    const todoItem = await db.getTodoItemEntity().findById(id)
-    if (!todoItem) return null
+  _todoEntity: Object;
 
-    await todoItem.updateAttributes({completed})
-
-    return new TodoItem(todoItem)
+  constructor (data: Object) {
+    this._todoEntity = data
   }
 
-  static async delete (id: string, {db}: RootValue): Promise<?TodoItem> {
-    const todoItem = await db.getTodoItemEntity().findById(id)
-    if (!todoItem) return null
-
-    const deletedTodoItem = new TodoItem(todoItem)
-
-    await todoItem.destroy()
-
-    return deletedTodoItem
-  }
-
-  _data: TodoItemEntity;
-
-  constructor (data: TodoItemEntity) {
-    this._data = data
-  }
-
-  getId (): number {
-    return this._data.id
+  getId (): string {
+    return String(this._todoEntity.id)
   }
   getTitle (): string {
-    return this._data.title
+    return this._todoEntity.title
   }
   getCompleted (): boolean {
-    return this._data.completed
+    return this._todoEntity.completed
+  }
+
+  async update(completed: boolean): Promise<void> {
+    this._todoEntity.completed = completed;
+    this._todoEntity.save();
+  }
+
+  async destroy(): Promise<void> {
+    await this._todoEntity.destroy()
   }
 }

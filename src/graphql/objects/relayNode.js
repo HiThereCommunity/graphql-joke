@@ -16,7 +16,7 @@ import {
  * The first method is the way we resolve an ID to its object. The second is the
  * way we resolve an object that implements node to its type.
  */
-export const { nodeInterface, nodeField } = nodeDefinitions(
+export const { nodeInterface, nodeField, nodesField } = nodeDefinitions(
   (globalId, context, {rootValue}) => {
     const { type, id } = fromGlobalId(globalId)
 

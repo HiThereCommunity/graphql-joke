@@ -1,5 +1,8 @@
 // @flow
+import {TodoItemConnector} from '../connectors';
 
-export type GraphQLIDInput = string;
+export type ID = string;
 
-export type GraphQLIDOutput = string | number;
+export type Context = {
+  todoItemConnector:TodoItemConnector
+}

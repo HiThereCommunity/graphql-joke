@@ -6,6 +6,7 @@ import {
 
 import {
   nodeField,
+  nodesField,
   GraphQLTodoList
 } from './objects'
 
@@ -17,6 +18,7 @@ export default new GraphQLObjectType({
   description: 'The query root.',
   fields: () => ({
     node: nodeField,
+    nodes: nodesField,
     todoList: {
       type: new GraphQLNonNull(GraphQLTodoList),
       description: 'The list of todo items',

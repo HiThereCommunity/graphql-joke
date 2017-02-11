@@ -12,17 +12,16 @@ import 'babel-polyfill'
 
 import express from 'express'
 import graphqlHTTP from 'express-graphql'
-import GraphQLSchema from './graphql'
-import type {RootValue} from './types'
-import {PostgresConnector} from './connectors'
+import { schema, type Context } from './graphql'
+import {TodoItemConnector, connect} from './connectors'
 
 import config from './config'
 
-const connector = new PostgresConnector(config.db)
+const sequelize = connect(config.db);
+sequelize.sync({force: false});
 
-const createRootValue = (req): RootValue => ({
-  db: connector,
-  viewer: req.user
+const createContext = (): Context => ({
+  todoItemConnector: new TodoItemConnector(sequelize),
 })
 
 const app = express()
@@ -49,9 +48,9 @@ const formatError = (error) => {
  * The GraphiQL endpoint
  */
 app.use(`/graphiql`, graphqlHTTP(req => ({
-  schema: GraphQLSchema,
+  schema,
   graphiql: true,
-  rootValue: createRootValue(req),
+  context: createContext(),
   formatError
 })))
 
@@ -59,9 +58,9 @@ app.use(`/graphiql`, graphqlHTTP(req => ({
  * The single GraphQL Endpoint
  */
 app.use('/', graphqlHTTP(req => ({
-  schema: GraphQLSchema,
+  schema,
   graphiql: false,
-  rootValue: createRootValue(req),
+  rootValue: createContext(),
   formatError
 })))
 
