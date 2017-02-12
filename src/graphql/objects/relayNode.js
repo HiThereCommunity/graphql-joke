@@ -19,7 +19,7 @@ export const { nodeInterface, nodeField, nodesField } = nodeDefinitions(async (
 
     if (type === "TodoItem") {
       return TodoItem.gen(viewer, id, loaders.todoItem);
-    } else if (type == "User") {
+    } else if (type === "User") {
       return User.gen(viewer, id, loaders.user);
     }
     return null;

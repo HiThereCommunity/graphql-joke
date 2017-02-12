@@ -6,9 +6,12 @@ import DataLoader from 'dataloader';
 import User from '../user';
 import { batchGetTodoItems } from '../../loaders';
 
+const loader = new DataLoader(ids => batchGetTodoItems(ids));
+
 describe('TodoItem model', () => {
 
   beforeEach(async () => {
+    loader.clearAll();
     // clear the database before each test. Make sure that the name of the database table matches test.
     await db.sequelize.sync({force: true, match: /test$/})
   })
@@ -29,7 +32,6 @@ describe('TodoItem model', () => {
       const userData = await createUser(1, "Bob");
       await createTodo(2, 'dummy todo', false, 1);
       const viewer = new User(userData);
-      const loader = new DataLoader(ids => batchGetTodoItems(ids));
       const todoItemGen = await TodoItem.gen(viewer, "2", loader);
 
       if (todoItemGen == null)
@@ -41,9 +43,7 @@ describe('TodoItem model', () => {
         completed: false
       });
 
-      loader.clearAll();
-
-       expect(await TodoItem.gen(viewer, "3", loader)).toBeNull();
+      expect(await TodoItem.gen(viewer, "3", loader)).toBeNull();
 
       await todoItemGen.update(true);
 
@@ -54,7 +54,17 @@ describe('TodoItem model', () => {
       const todoItem = await db.todo_item.findById(2);
       expect(todoItem).toBeNull();
 
-    })
+    });
+
+    it('returns null if a todo is retrieved for a user with access', async () => {
+      await createUser(1, "Bob");
+      const userDataAndrew = await createUser(2, "Andrew");
+
+      await createTodo(2, 'dummy todo', false, 1);
+      const viewer = new User(userDataAndrew);
+
+      expect(await TodoItem.gen(viewer, "2", loader)).toBeNull();
+    });
   });
 
   //

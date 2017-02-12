@@ -14,7 +14,7 @@ export default new GraphQLObjectType({
     viewer: {
       type: new GraphQLNonNull(GraphQLUser),
       description: "The currently authenticated user.",
-      resolve: (root: Object, args: Object, context: Context): User => context.viewer
+      resolve: (root: Object, args: Object, {viewer}: Context): User => viewer
     }
   })
 });

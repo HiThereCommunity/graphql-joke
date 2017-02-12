@@ -10,18 +10,7 @@ const checkCanSee = (viewer: User, data: Object): boolean => {
 };
 
 export default class TodoItem {
-  static initializeFromData(
-    id: number,
-    title: string,
-    completed: boolean
-  ): TodoItem {
-    return new TodoItem({
-      id,
-      title,
-      completed
-    });
-  }
-
+  
   static async gen(
     viewer: User,
     id: string,
