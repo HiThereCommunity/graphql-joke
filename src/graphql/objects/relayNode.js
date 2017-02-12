@@ -1,7 +1,7 @@
 // @flow
 
 import { nodeDefinitions, fromGlobalId } from "graphql-relay";
-import { TodoItem, TodoList } from "../../models";
+import { TodoItem, User } from "../../models";
 import type {Context} from "../../graphql";
 
 /**
@@ -12,16 +12,15 @@ import type {Context} from "../../graphql";
  */
 export const { nodeInterface, nodeField, nodesField } = nodeDefinitions(async (
   globalId,
-  context
+  {viewer, loaders}: Context
 ) =>
   {
     const { type, id } = fromGlobalId(globalId);
 
     if (type === "TodoItem") {
-      return await TodoItem.gen(id, context.todoItemConnector);
-    }
-    if (type === "TodoList") {
-      return await TodoList.gen(id, context.todoItemConnector);
+      return TodoItem.gen(viewer, id, loaders.todoItem);
+    } else if (type == "User") {
+      return User.gen(viewer, id, loaders.user);
     }
     return null;
   });

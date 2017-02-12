@@ -1,12 +1,14 @@
 // @flow
-import {TodoItemConnector, UserConnector} from '../connectors';
+
+import DataLoader from 'dataloader';
 import {User} from '../models'
 
 export type ID = string;
 
-export type {TodoItemConnector, UserConnector} from '../connectors';
-
 export type Context = {
-  todoItemConnector: TodoItemConnector,
+  loaders: {
+    todoItem: DataLoader<string, ?Object>,
+    user: DataLoader<string, ?Object>
+  },
   viewer: User
 }

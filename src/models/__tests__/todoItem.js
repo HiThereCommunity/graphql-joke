@@ -1,111 +1,136 @@
-
+// @flow
+//
 import TodoItem from '../todoItem'
-import { testDBConnection } from '../../testUtils'
-import {PostgresConnector} from '../../connectors'
+import db from '../../database';
+import DataLoader from 'dataloader';
+import User from '../user';
+import { batchGetTodoItems } from '../../loaders';
 
 describe('TodoItem model', () => {
-  const postgres = new PostgresConnector(testDBConnection, true)
-
-  const rootValue = {
-    db: postgres
-  }
 
   beforeEach(async () => {
     // clear the database before each test. Make sure that the name of the database table matches test.
-    await postgres.getSequelize().sync({force: true, match: /test$/})
+    await db.sequelize.sync({force: true, match: /test$/})
   })
 
-  afterAll(() => postgres.getSequelize().close())
+  afterAll(() => db.sequelize.close())
 
-  const createTodo = async (title: string, completed: ?boolean = false) => {
-    return await postgres.getTodoItemEntity().create({title, completed})
+  const createTodo = async (id: number, title: string, completed: boolean, creator: number) => {
+    return await db.todo_item.create({id, title, completed, creator})
   }
 
-  it('retrieves a todo', async () => {
-    const newTodoItem = await createTodo('dummy todo', false)
-    const todoItemGen = await TodoItem.gen(newTodoItem.id, rootValue)
+  const createUser = async (id: number, name: string) => {
+    return await db.user.create({id, name});
+  }
 
-    if (todoItemGen == null) {
-      throw new Error(`Expected todo to be found but got ${String(todoItemGen)}`)
-    }
+  describe('static gen', () => {
+    it('retrieves a todo', async () => {
 
-    expect(todoItemGen.getId()).toEqual(newTodoItem.id)
-    expect(todoItemGen.getTitle()).toEqual('dummy todo')
-    expect(todoItemGen.getCompleted()).toEqual(false)
-  })
+      const userData = await createUser(1, "Bob");
+      await createTodo(2, 'dummy todo', false, 1);
+      const viewer = new User(userData);
+      const loader = new DataLoader(ids => batchGetTodoItems(ids));
+      const todoItemGen = await TodoItem.gen(viewer, "2", loader);
 
-  it('returns when retrieving a todo for an unknown id', async () => {
-    const todoItemGen = await TodoItem.gen('1', rootValue)
-    expect(todoItemGen).toBeNull()
-  })
+      if (todoItemGen == null)
+        throw new Error(`Expected todo to be found but got ${String(todoItemGen)}`)
 
-  it('creates a new todo', async () => {
-    const newTodo = await TodoItem.write('new todo', rootValue)
-    if (newTodo == null) {
-      throw new Error(`should have created a new todo but got ${String(newTodo)}`)
-    }
+      expect(todoItemGen).toMatchObject({
+        id: "2",
+        title: "dummy todo",
+        completed: false
+      });
 
-    const dbTodo = await postgres.getTodoItemEntity().findById(newTodo.getId())
-    expect(dbTodo).not.toBeNull()
+      loader.clearAll();
 
-    expect(dbTodo.title).toEqual('new todo')
-    expect(dbTodo.completed).toEqual(false)
-  })
+       expect(await TodoItem.gen(viewer, "3", loader)).toBeNull();
 
-  it('updates a todo', async () => {
-    const newTodoItem = await createTodo('dummy todo', false)
-    const updatedTodo = await TodoItem.update(newTodoItem.id, true, rootValue)
-    if (updatedTodo == null) {
-      throw new Error(`Expected updated todo to be found but got ${String(updatedTodo)}`)
-    }
+      await todoItemGen.update(true);
 
-    expect(updatedTodo.getId()).toEqual(newTodoItem.id)
-    expect(updatedTodo.getTitle()).toEqual('dummy todo')
-    expect(updatedTodo.getCompleted()).toEqual(true)
+      expect(todoItemGen.completed).toEqual(true);
 
-    const updatedTodoDB = await postgres.getTodoItemEntity().findById(newTodoItem.id)
-    expect(updatedTodoDB.title).toEqual('dummy todo')
-    expect(updatedTodoDB.completed).toEqual(true)
-  })
+      await todoItemGen.destroy(loader);
 
-  it('updates a todo', async () => {
-    const newTodoItem = await createTodo('dummy todo', false)
-    const updatedTodo = await TodoItem.update(newTodoItem.id, true, rootValue)
-    if (updatedTodo == null) {
-      throw new Error(`Expected updated todo to be found but got ${String(updatedTodo)}`)
-    }
+      const todoItem = await db.todo_item.findById(2);
+      expect(todoItem).toBeNull();
 
-    expect(updatedTodo.getId()).toEqual(newTodoItem.id)
-    expect(updatedTodo.getTitle()).toEqual('dummy todo')
-    expect(updatedTodo.getCompleted()).toEqual(true)
+    })
+  });
 
-    const updatedTodoDB = await postgres.getTodoItemEntity().findById(newTodoItem.id)
-    expect(updatedTodoDB.title).toEqual('dummy todo')
-    expect(updatedTodoDB.completed).toEqual(true)
-  })
-
-  it('returns null when updating a todo for a nonexistent id', async () => {
-    const updatedTodo = await TodoItem.update('123', true, rootValue)
-    expect(updatedTodo).toBeNull()
-  })
-
-  it('deletes a todo', async () => {
-    const newTodoItem = await createTodo('dummy todo', false)
-
-    const deletedTodoItem = await TodoItem.delete(newTodoItem.id, rootValue)
-    if (deletedTodoItem == null) {
-      throw new Error(`Expected deleted item but got ${String(deletedTodoItem)}`)
-    }
-    expect(deletedTodoItem.getId()).toEqual(newTodoItem.id)
-    expect(deletedTodoItem.getTitle()).toEqual('dummy todo')
-    expect(deletedTodoItem.getCompleted()).toEqual(false)
-
-    const deletedTodoDB = await postgres.getTodoItemEntity().findById(newTodoItem.id)
-    expect(deletedTodoDB).toBeNull()
-  })
-
-  it('returns null when deleting a todo for a nonexistent id', async () => {
-    const deletedTodoItem = await TodoItem.delete('123', rootValue)
-    expect(deletedTodoItem).toBeNull()
-  })
+  //
+  //
+  // it('returns when retrieving a todo for an unknown id', async () => {
+  //   const todoItemGen = await TodoItem.gen('1', rootValue)
+  //   expect(todoItemGen).toBeNull()
+  // })
+  //
+  // it('creates a new todo', async () => {
+  //   const newTodo = await TodoItem.write('new todo', rootValue)
+  //   if (newTodo == null) {
+  //     throw new Error(`should have created a new todo but got ${String(newTodo)}`)
+  //   }
+  //
+  //   const dbTodo = await postgres.getTodoItemEntity().findById(newTodo.getId())
+  //   expect(dbTodo).not.toBeNull()
+  //
+  //   expect(dbTodo.title).toEqual('new todo')
+  //   expect(dbTodo.completed).toEqual(false)
+  // })
+  //
+  // it('updates a todo', async () => {
+  //   const newTodoItem = await createTodo('dummy todo', false)
+  //   const updatedTodo = await TodoItem.update(newTodoItem.id, true, rootValue)
+  //   if (updatedTodo == null) {
+  //     throw new Error(`Expected updated todo to be found but got ${String(updatedTodo)}`)
+  //   }
+  //
+  //   expect(updatedTodo.getId()).toEqual(newTodoItem.id)
+  //   expect(updatedTodo.getTitle()).toEqual('dummy todo')
+  //   expect(updatedTodo.getCompleted()).toEqual(true)
+  //
+  //   const updatedTodoDB = await postgres.getTodoItemEntity().findById(newTodoItem.id)
+  //   expect(updatedTodoDB.title).toEqual('dummy todo')
+  //   expect(updatedTodoDB.completed).toEqual(true)
+  // })
+  //
+  // it('updates a todo', async () => {
+  //   const newTodoItem = await createTodo('dummy todo', false)
+  //   const updatedTodo = await TodoItem.update(newTodoItem.id, true, rootValue)
+  //   if (updatedTodo == null) {
+  //     throw new Error(`Expected updated todo to be found but got ${String(updatedTodo)}`)
+  //   }
+  //
+  //   expect(updatedTodo.getId()).toEqual(newTodoItem.id)
+  //   expect(updatedTodo.getTitle()).toEqual('dummy todo')
+  //   expect(updatedTodo.getCompleted()).toEqual(true)
+  //
+  //   const updatedTodoDB = await postgres.getTodoItemEntity().findById(newTodoItem.id)
+  //   expect(updatedTodoDB.title).toEqual('dummy todo')
+  //   expect(updatedTodoDB.completed).toEqual(true)
+  // })
+  //
+  // it('returns null when updating a todo for a nonexistent id', async () => {
+  //   const updatedTodo = await TodoItem.update('123', true, rootValue)
+  //   expect(updatedTodo).toBeNull()
+  // })
+  //
+  // it('deletes a todo', async () => {
+  //   const newTodoItem = await createTodo('dummy todo', false)
+  //
+  //   const deletedTodoItem = await TodoItem.delete(newTodoItem.id, rootValue)
+  //   if (deletedTodoItem == null) {
+  //     throw new Error(`Expected deleted item but got ${String(deletedTodoItem)}`)
+  //   }
+  //   expect(deletedTodoItem.getId()).toEqual(newTodoItem.id)
+  //   expect(deletedTodoItem.getTitle()).toEqual('dummy todo')
+  //   expect(deletedTodoItem.getCompleted()).toEqual(false)
+  //
+  //   const deletedTodoDB = await postgres.getTodoItemEntity().findById(newTodoItem.id)
+  //   expect(deletedTodoDB).toBeNull()
+  // })
+  //
+  // it('returns null when deleting a todo for a nonexistent id', async () => {
+  //   const deletedTodoItem = await TodoItem.delete('123', rootValue)
+  //   expect(deletedTodoItem).toBeNull()
+  // })
 })

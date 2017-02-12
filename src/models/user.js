@@ -1,30 +1,34 @@
 // @flow
-/**
- * Created by Florentijn Hogerwerf on 11/02/17.
- */
 
+import DataLoader from 'dataloader';
+import { isNumeric } from '../utils';
 
-import {TodoItemConnector} from '../connectors';
-import type {UserConnector} from '../graphql'
+const checkCanSee = (viewer: User, data: Object): boolean => {
+  return viewer.id === String(data.id);
+}
 
 export default class User {
 
-  static async gen (id: string, userConnector: UserConnector): Promise<?User> {
-    const user = await userConnector.getEntity().findOne({id});
+  static async gen(viewer: User, id: string, loader: DataLoader<string, ?Object>): Promise<?User> {
+    if (!isNumeric(id)) return null;
+    const data = await loader.load(id);
+    if (!data) return null;
+    const canSee = checkCanSee(viewer, data);
+    return canSee ? new User(data) : null;
+  }
+
+  //TODO: Add authorization token here...
+  static async genAuth (id: string, loader: DataLoader<string, ?Object>): Promise<?User> {
+    if (!isNumeric(id)) return null;
+    const user = await loader.load(id);
     return user ? new User(user) : null
   }
 
-  _userEntity: Object;
+  id: string;
+  name: string;
 
   constructor (data: Object) {
-    this._userEntity = data
-  }
-
-  getId (): string {
-    return String(this._userEntity.id)
-  }
-
-  getName(): string {
-    return this._userEntity.name
+    this.id = String(data.id);
+    this.name = data.name;
   }
 }

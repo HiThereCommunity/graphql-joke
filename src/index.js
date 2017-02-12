@@ -8,76 +8,87 @@
  *
  */
 
-import 'babel-polyfill'
+import "babel-polyfill";
 
-import express from 'express'
-import graphqlHTTP from 'express-graphql'
-import { schema } from './graphql'
-import type {Context} from './graphql'
-import { TodoItemConnector, UserConnector, connect } from './connectors'
-import { User } from './models'
+import express from "express";
+import graphqlHTTP from "express-graphql";
+import { schema } from "./graphql";
+import type { Context } from "./graphql";
+import { User } from "./models";
+import db from "./database";
 
-import config from './config';
-const sequelize = connect(config.db);
-sequelize.sync({force: false});
+import { batchGetTodoItems, batchGetUsers} from "./loaders";
+import config from "./config";
+import DataLoader from "dataloader";
 
-
-const createDBUser = async (sequalize): Promise<User> => {
-
-  const userConnector = new UserConnector(sequelize);
-  let user = await sequelize.models.user.findOne({id: 1});
-  if (!user) user = await sequelize.models.user.create({name: 'Bob', id: 1});
-
-  return new User(user, userConnector);
-}
+// db.user.create({
+//   id: 1,
+//   name: "Bob"
+// });
 
 const createContext = async (): Promise<Context> => {
-  let user = await createDBUser(sequelize);
+
+  const todoItemLoader = new DataLoader(ids => batchGetTodoItems(ids));
+  const userLoader = new DataLoader(ids => batchGetUsers(ids));
+
+  const user = await User.genAuth("1", userLoader);
+  if (!user) throw new Error("Could not find user");
   return {
-    todoItemConnector: new TodoItemConnector(sequelize),
+    loaders: {
+      todoItem: todoItemLoader,
+      user: userLoader
+    },
     viewer: user
-  }
-}
+  };
+};
 
-const app = express()
+const app = express();
 
-const formatError = (error) => {
-  if (config.environment === 'development') {
+const formatError = error => {
+  if (config.environment === "development") {
     return {
       message: error.message,
-      stack: error.stack.split('\n'),
+      stack: error.stack.split("\n"),
       locations: error.locations,
       path: error.path
-    }
-  } else if (config.environment === 'production') {
+    };
+  } else if (config.environment === "production") {
     return {
       message: error.message,
       locations: error.locations,
       path: error.path
-    }
+    };
   }
-}
+};
 
 /**
  * The GraphiQL endpoint
  */
-app.use(`/graphiql`, graphqlHTTP(async req => ({
-  schema,
-  graphiql: true,
-  context: await createContext(),
-  formatError
-})))
+app.use(
+  `/graphiql`,
+  graphqlHTTP(async req => ({
+    schema,
+    graphiql: true,
+    context: await createContext(),
+    formatError
+  }))
+);
 
 /**
  * The single GraphQL Endpoint
  */
-app.use('/', graphqlHTTP(async req => ({
-  schema,
-  graphiql: false,
-  context: await createContext(),
-  formatError
-})))
+app.use(
+  "/",
+  graphqlHTTP(async req => ({
+    schema,
+    graphiql: false,
+    context: await createContext(),
+    formatError
+  }))
+);
 
-app.listen(config.port, function () {
-  console.log(`Server running on port ${config.port}`)
-})
+db.sequelize.sync().then(() => {
+  app.listen(config.port, () => {
+    console.log(`Server running on port ${config.port}`);
+  });
+});

@@ -1,29 +1,54 @@
 // @flow
 
-import { GraphQLObjectType, GraphQLNonNull, GraphQLString } from "graphql";
+import {
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLBoolean
+} from "graphql";
+import {
+  globalIdField,
+  connectionDefinitions,
+  connectionArgs,
+  connectionFromPromisedArray,
+} from "graphql-relay";
+
 import { nodeInterface } from "./relayNode";
-import GraphQLTodoList from "./todoList";
-import { User, TodoList } from "../../models";
-import type { ID } from "../type";
-import { globalIdField } from "graphql-relay";
-import type { Context } from '../index'
+import GraphQLTodoItem from "./todoItem";
+
+import { User, TodoItem } from "../../models";
+import type { ID, Context } from "../type";
+
+const { connectionType: TodoItemConnection } = connectionDefinitions({
+  nodeType: GraphQLTodoItem
+});
 
 export default new GraphQLObjectType({
   name: "User",
-  description: "Represents the user that holds to dos",
+  description: "Represents a happy owner of some todos",
   fields: () => ({
-    id: globalIdField("User", (user: User): ID => user.getId()),
-    todoList: {
-      type: new GraphQLNonNull(GraphQLTodoList),
-      description: "The list of todo items.",
-      resolve: (root: Object, args: Object, context: Context): TodoList =>
-        new TodoList(context.todoItemConnector)
-    },
+    id: globalIdField("TodoItem", (user: User): ID => user.id),
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The name of the user",
-      resolve: (root: Object, args: Object, {viewer}: Context): string =>
-        viewer.getName()
+      resolve: (root: Object, args: Object, { viewer }: Context): string =>
+        viewer.name
+    },
+    todos: {
+      type: TodoItemConnection,
+      description: "All the todo items.",
+      args: {
+        completed: {
+          type: GraphQLBoolean,
+          description: "An optional filter for completed todo items, if not set then all todos are retrieved"
+        },
+        ...connectionArgs
+      },
+      resolve: (user: User, args, { viewer, loaders }: Context) =>
+        connectionFromPromisedArray(
+          TodoItem.genList(viewer, loaders.todoItem, user, args.completed),
+          args
+        )
     }
   }),
   // Relay will use this function to determine if an object in your system is
@@ -31,5 +56,5 @@ export default new GraphQLObjectType({
   isTypeOf: function(obj) {
     return obj instanceof User;
   },
-  interfaces: [ nodeInterface ]
+  interfaces: [nodeInterface]
 });

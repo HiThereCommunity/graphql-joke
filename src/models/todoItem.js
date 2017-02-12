@@ -1,60 +1,100 @@
 // @flow
-/**
- * Created by Dirk-Jan Rutten on 13/08/16.
- */
 
-import {TodoItemConnector} from '../connectors';
-import User from './User'
+import User from "./user";
+import db from "../database";
+import DataLoader from "dataloader";
+import { isNumeric } from "../utils";
+
+const checkCanSee = (viewer: User, data: Object): boolean => {
+  return viewer.id === String(data.creator);
+};
+
 export default class TodoItem {
-
-  static initializeFromData (id: number, title: string, completed: boolean): TodoItem {
+  static initializeFromData(
+    id: number,
+    title: string,
+    completed: boolean
+  ): TodoItem {
     return new TodoItem({
       id,
       title,
       completed
-    })
+    });
   }
 
-  static async gen (id: string, todoConnector: TodoItemConnector): Promise<?TodoItem> {
-    
-    const todoItem = await todoConnector.fetch(id);
-    return todoItem ? new TodoItem(todoItem) : null
+  static async gen(
+    viewer: User,
+    id: string,
+    loader: DataLoader<string, ?Object>
+  ): Promise<?TodoItem> {
+    if (!isNumeric(id)) return null;
+
+    //With batching/caching
+    const data = await loader.load(id);
+
+    //without batching/caching
+    //const data = await db.todo_item.findById(id);
+    if (!data) return null;
+    const canSee = checkCanSee(viewer, data);
+    return canSee ? new TodoItem(data) : null;
   }
 
-  static async write (title: string, todoConnector: TodoItemConnector, user: User): Promise<TodoItem> {
-
-    const newTodoItem = await todoConnector.getEntity().create({
+  static async write(
+    viewer: User,
+    title: string,
+    loader: DataLoader<string, ?Object>
+  ): Promise<TodoItem> {
+    const data = await db.todo_item.create({
       title,
       completed: false,
-      user_account: user.getId()
+      creator: viewer.id
     });
-    return new TodoItem(newTodoItem);
+
+    //Update the cache
+    loader.prime(data.id, data);
+    return new TodoItem(data);
+  }
+
+  static async genList(
+    viewer: User,
+    loader: DataLoader<string, ?Object>,
+    user: User,
+    completed: ?boolean
+  ): Promise<Array<TodoItem>> {
+
+    const data = await db.todo_item.findAll({
+      where: {
+        creator: user.id,
+        ...(completed ? { completed } : null)
+      },
+      attributes: ["id"]
+    });
+
+    return data.map(entry => TodoItem.gen(viewer, entry.id, loader));
   }
 
   _todoEntity: Object;
+  id: string;
+  title: string;
+  completed: boolean;
 
-  constructor (data: Object) {
-    this._todoEntity = data
-  }
-
-  getId (): string {
-    return String(this._todoEntity.id)
-  }
-
-  getTitle (): string {
-    return this._todoEntity.title
-  }
-
-  getCompleted (): boolean {
-    return this._todoEntity.completed
+  constructor(data: Object) {
+    this.id = String(data.id);
+    this.title = data.title;
+    this.completed = data.completed;
+    this._todoEntity = data;
   }
 
   async update(completed: boolean): Promise<void> {
+    if (this.completed === completed) return;
+
     this._todoEntity.completed = completed;
     this._todoEntity.save();
+    this.completed = completed;
   }
 
-  async destroy(): Promise<void> {
-    await this._todoEntity.destroy()
+  async destroy(loader: DataLoader<string, ?Object>): Promise<void> {
+    await this._todoEntity.destroy();
+    loader.clear(this.id);
   }
 }

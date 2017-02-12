@@ -9,7 +9,7 @@ import type { Context } from "../type";
 type Payload = { todo: TodoItem };
 
 export default mutationWithClientMutationId({
-  name: "DeleteTodoItem",
+  name: "DeleteTodo",
   description: "Delete a todo item.",
   inputFields: { todoId: { type: new GraphQLNonNull(GraphQLID) } },
   outputFields: {
@@ -20,17 +20,15 @@ export default mutationWithClientMutationId({
     }
   },
   mutateAndGetPayload: async (
-    { todoId, completed },
-    context: Context
-  ): Promise<Payload> =>
-    {
-      const { id } = fromGlobalId(todoId);
-      const todo = await TodoItem.gen(id, context.todoItemConnector);
-      if (!todo) {
-        throw new Error(`Todo item with id ${id} does not exist`);
-      }
+    { todoId },
+    { viewer, loaders }: Context
+  ): Promise<Payload> => {
+    const { id }: { id: string } = fromGlobalId(todoId);
 
-      await todo.destroy(id);
-      return { todo };
-    }
+    const todo = await TodoItem.gen(viewer, id, loaders.todoItem);
+    if (!todo) throw new Error(`Todo item with id ${id} does not exist`);
+
+    await todo.destroy(loaders.todoItem);
+    return { todo };
+  }
 });

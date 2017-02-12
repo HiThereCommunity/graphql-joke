@@ -12,4 +12,4 @@ node_js:
 before_script:
   - psql -c 'create database test;' -U postgres
 
-script: TEST_DB_USER=postgres npm run travis
+script: npm run travis

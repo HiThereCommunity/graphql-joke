@@ -9,7 +9,7 @@ import type { Context } from "../type";
 type Payload = { todo: TodoItem };
 
 export default mutationWithClientMutationId({
-  name: "UpdateTodoItem",
+  name: "UpdateTodo",
   description: "Update a todo item.",
   inputFields: {
     todoId: { type: new GraphQLNonNull(GraphQLID) },
@@ -23,11 +23,11 @@ export default mutationWithClientMutationId({
   },
   mutateAndGetPayload: async (
     { todoId, completed },
-    context: Context
+    { viewer, loaders }: Context
   ): Promise<Payload> =>
     {
       const { id } = fromGlobalId(todoId);
-      const todo = await TodoItem.gen(id, context.todoItemConnector);
+      const todo = await TodoItem.gen(viewer, id, loaders.todoItem);
       if (!todo) {
         throw new Error(`Could not find a todo with id ${id}.`);
       }

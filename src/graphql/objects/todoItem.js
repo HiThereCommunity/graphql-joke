@@ -22,15 +22,15 @@ export default new GraphQLObjectType({
   fields: () => ({
     id: globalIdField(
           'TodoItem',
-          (todoItem: TodoItem): ID => todoItem.getId()
+          (todoItem: TodoItem): ID => todoItem.id
         ),
     title: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: (todoItem: TodoItem): string => todoItem.getTitle()
+      resolve: (todoItem: TodoItem): string => todoItem.title
     },
     completed: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (todoItem: TodoItem): boolean => todoItem.getCompleted()
+      resolve: (todoItem: TodoItem): boolean => todoItem.completed
     }
   }),
     // Relay will use this function to determine if an object in your system is
