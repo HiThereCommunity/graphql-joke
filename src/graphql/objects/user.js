@@ -19,6 +19,8 @@ import GraphQLTodoItem from "./todoItem";
 import { User, TodoItem } from "../../models";
 import type { ID, Context } from "../type";
 
+import ClientError from "./../../utils/clientError";
+
 const { connectionType: TodoItemConnection } = connectionDefinitions({
   nodeType: GraphQLTodoItem
 });
@@ -31,8 +33,9 @@ export default new GraphQLObjectType({
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The name of the user",
-      resolve: (root: Object, args: Object, { viewer }: Context): string =>
-        viewer.name
+      resolve: (root: Object, args: Object, { viewer }: Context): string => {
+        throw new ClientError("aaaao");
+      }
     },
     todos: {
       type: TodoItemConnection,

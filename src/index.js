@@ -21,6 +21,8 @@ import { batchGetTodoItems, batchGetUsers} from "./loaders";
 import config from "./config";
 import DataLoader from "dataloader";
 
+import formatErrorGraphQL from './utils/GraphQLErrorFormatter';
+
 // db.user.create({
 //   id: 1,
 //   name: "Bob"
@@ -70,7 +72,7 @@ app.use(
     schema,
     graphiql: true,
     context: await createContext(),
-    formatError
+    formatError: formatErrorGraphQL()
   }))
 );
 
