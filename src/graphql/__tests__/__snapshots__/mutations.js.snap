@@ -1,0 +1,45 @@
+exports[`GraphQL mutations adds a todo 1`] = `
+Object {
+  "data": Object {
+    "addTodo": Object {
+      "clientMutationId": "1234",
+      "newTodo": Object {
+        "completed": false,
+        "id": "VG9kb0l0ZW06MQ==",
+        "title": "new todo",
+      },
+    },
+  },
+}
+`;
+
+exports[`GraphQL mutations deletes a todo 1`] = `
+Object {
+  "data": Object {
+    "deleteTodo": Object {
+      "clientMutationId": "1234",
+      "deletedTodo": Object {
+        "completed": false,
+        "id": "VG9kb0l0ZW06MQ==",
+        "title": "todo",
+      },
+      "deletedTodoId": "VG9kb0l0ZW06MQ==",
+    },
+  },
+}
+`;
+
+exports[`GraphQL mutations updates a todo 1`] = `
+Object {
+  "data": Object {
+    "updateTodo": Object {
+      "clientMutationId": "1234",
+      "updatedTodo": Object {
+        "completed": true,
+        "id": "VG9kb0l0ZW06MQ==",
+        "title": "todo",
+      },
+    },
+  },
+}
+`;

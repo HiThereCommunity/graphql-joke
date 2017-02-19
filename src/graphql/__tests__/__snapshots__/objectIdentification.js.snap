@@ -1,0 +1,31 @@
+exports[`GraphQL object identification fetches the ID of the todo list 1`] = `
+Object {
+  "data": Object {
+    "todoList": Object {
+      "id": "VG9kb0xpc3Q6VG9kb0xpc3RJZA==",
+    },
+  },
+}
+`;
+
+exports[`GraphQL object identification fetches the todo item node 1`] = `
+Object {
+  "data": Object {
+    "node": Object {
+      "completed": false,
+      "id": "VG9kb0l0ZW06MQ==",
+      "title": "todo",
+    },
+  },
+}
+`;
+
+exports[`GraphQL object identification fetches the todo list node 1`] = `
+Object {
+  "data": Object {
+    "node": Object {
+      "id": "VG9kb0xpc3Q6VG9kb0xpc3RJZA==",
+    },
+  },
+}
+`;
