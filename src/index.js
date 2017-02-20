@@ -17,7 +17,7 @@ import type { Context } from "./graphql";
 import { User } from "./models";
 import db from "./database";
 
-import { batchGetTodoItems, batchGetUsers} from "./loaders";
+import { batchGetJokes, batchGetUsers} from "./loaders";
 import config from "./config";
 import DataLoader from "dataloader";
 
@@ -28,14 +28,14 @@ import DataLoader from "dataloader";
 
 const createContext = async (): Promise<Context> => {
 
-  const todoItemLoader = new DataLoader(ids => batchGetTodoItems(ids));
+  const jokeLoader = new DataLoader(ids => batchGetJokes(ids));
   const userLoader = new DataLoader(ids => batchGetUsers(ids));
 
   const user = await User.genAuth("1", userLoader);
   if (!user) throw new Error("Could not find user");
   return {
     loaders: {
-      todoItem: todoItemLoader,
+      joke: jokeLoader,
       user: userLoader
     },
     viewer: user

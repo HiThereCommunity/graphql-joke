@@ -1,7 +1,7 @@
 // @flow
 
 import { nodeDefinitions, fromGlobalId } from "graphql-relay";
-import { TodoItem, User } from "../../models";
+import { Joke, User } from "../../models";
 import type {Context} from "../../graphql";
 
 /**
@@ -17,8 +17,8 @@ export const { nodeInterface, nodeField, nodesField } = nodeDefinitions(async (
   {
     const { type, id } = fromGlobalId(globalId);
 
-    if (type === "TodoItem") {
-      return TodoItem.gen(viewer, id, loaders.todoItem);
+    if (type === "Joke") {
+      return Joke.gen(viewer, id, loaders.joke);
     } else if (type === "User") {
       return User.gen(viewer, id, loaders.user);
     }

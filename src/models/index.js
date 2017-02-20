@@ -1,4 +1,4 @@
 // @flow
 
-export {default as TodoItem} from './todoItem'
+export {default as Joke} from './joke'
 export {default as User} from './user'

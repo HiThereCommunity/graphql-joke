@@ -14,13 +14,13 @@ import {
 } from "graphql-relay";
 
 import { nodeInterface } from "./relayNode";
-import GraphQLTodoItem from "./todoItem";
+import GraphQLJoke from "./joke";
 
 import { User, TodoItem } from "../../models";
 import type { ID, Context } from "../type";
 
 const { connectionType: TodoItemConnection } = connectionDefinitions({
-  nodeType: GraphQLTodoItem
+  nodeType: new GraphQLNonNull(GraphQLTodoItem)
 });
 
 export default new GraphQLObjectType({

@@ -7,34 +7,34 @@
 import {
     GraphQLString,
     GraphQLObjectType,
-    GraphQLBoolean,
+    GraphQLInt,
     GraphQLNonNull
 } from 'graphql'
 import {globalIdField} from 'graphql-relay'
 
 import {nodeInterface} from './relayNode'
-import {TodoItem} from '../../models'
+import {Joke} from '../../models'
 import type {ID} from '../type'
 
 export default new GraphQLObjectType({
-  name: 'TodoItem',
-  description: 'Represents a todo item.',
+  name: 'Joke',
+  description: 'Represents a joke.',
   fields: () => ({
     id: globalIdField(
-          'TodoItem',
-          (todoItem: TodoItem): ID => todoItem.id
+          'Joke',
+          (joke: Joke): ID => joke.id
         ),
-    title: {
+    text: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: (todoItem: TodoItem): string => todoItem.title
+      resolve: (joke: Joke): string => joke.text
     },
-    completed: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: (todoItem: TodoItem): boolean => todoItem.completed
+    funnyLevel: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: (joke: Joke): number => joke.funnyLevel
     }
   }),
     // Relay will use this function to determine if an object in your system is
     // of a particular GraphQL type
-  isTypeOf: function (obj) { return obj instanceof TodoItem },
+  isTypeOf: function (obj) { return obj instanceof Joke },
   interfaces: [ nodeInterface ]
 })
