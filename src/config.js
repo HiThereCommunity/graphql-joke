@@ -12,10 +12,14 @@ export type configType = {
       port: number
   },
   port: number,
-  environment: "production" | "development" | "test"
-
+  environment: Environment,
+  debugMode: boolean
 }
+export type Environment = "production" | "development" | "test";
+
 var config: configType
+
+const debugMode = (environment === "production") ? true : false
 
 // Load the database config depending on the environment.
 switch (environment) {
@@ -45,7 +49,8 @@ switch (environment) {
     config = {
       db,
       port: 80,
-      environment
+      environment,
+      debugMode
     }
     break
   case 'development':
@@ -65,8 +70,9 @@ switch (environment) {
         database: env.DB_DATABASE,
         port: 5432
       },
-      port: 3000,
-      environment
+      port: 3001,
+      environment,
+      debugMode
     }
     break
   case 'test':
@@ -83,8 +89,9 @@ switch (environment) {
         password: env.DB_PASSWORD,
         port: 5432
       },
-      port: 3000,
-      environment
+      port: 3001,
+      environment,
+      debugMode
     }
     break
   default:

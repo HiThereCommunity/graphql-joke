@@ -27,7 +27,7 @@ export default mutationWithClientMutationId({
     const { id }: { id: string } = fromGlobalId(jokeId);
 
     const joke = await Joke.gen(viewer, id, loaders.joke);
-    if (!joke) throw new ClientError(`Joke with id ${id} does not exist`);
+    if (!joke) throw new ClientError(`Joke does not exist.`);
 
     await joke.destroy(loaders.joke);
     return { joke };

@@ -30,7 +30,7 @@ export default mutationWithClientMutationId({
       const { id } = fromGlobalId(jokeId);
       const joke = await Joke.gen(viewer, id, loaders.joke);
       if (!joke) {
-        throw new ClientError(`Could not find a joke with id ${id}.`);
+        throw new ClientError(`Joke does not exist.`);
       }
       await joke.update(funnyLevel);
       return { joke };

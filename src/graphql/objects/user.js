@@ -17,7 +17,6 @@ import GraphQLJoke from "./joke";
 
 import { User } from "../../models";
 import type { ID, Context } from "../type";
-import ClientError from "./../../utils/clientError";
 
 
 const { connectionType: JokeItemConnection } = connectionDefinitions({

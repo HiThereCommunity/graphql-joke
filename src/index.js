@@ -43,23 +43,6 @@ const createContext = async (): Promise<Context> => {
 
 const app = express();
 
-const formatError = error => {
-  if (config.environment === "development") {
-    return {
-      message: error.message,
-      stack: error.stack.split("\n"),
-      locations: error.locations,
-      path: error.path
-    };
-  } else if (config.environment === "production") {
-    return {
-      message: error.message,
-      locations: error.locations,
-      path: error.path
-    };
-  }
-};
-
 /**
  * The GraphiQL endpoint
  */
@@ -69,7 +52,7 @@ app.use(
     schema,
     graphiql: true,
     context: await createContext(),
-    formatError: formatErrorGraphQL(false)
+    formatError: formatErrorGraphQL(config.debugMode)
   }))
 );
 
@@ -82,7 +65,7 @@ app.use(
     schema,
     graphiql: false,
     context: await createContext(),
-    formatError: formatErrorGraphQL(false)
+    formatError: formatErrorGraphQL(config.debugMode)
   }))
 );
 
