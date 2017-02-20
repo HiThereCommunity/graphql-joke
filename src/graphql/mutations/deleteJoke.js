@@ -5,6 +5,7 @@ import { GraphQLNonNull, GraphQLID } from "graphql";
 import { GraphQLJoke } from "../objects";
 import { Joke } from "../../models";
 import type { Context } from "../type";
+import ClientError from "../../utils/clientError";
 
 type Payload = { joke: Joke };
 
@@ -26,7 +27,7 @@ export default mutationWithClientMutationId({
     const { id }: { id: string } = fromGlobalId(jokeId);
 
     const joke = await Joke.gen(viewer, id, loaders.joke);
-    if (!joke) throw new Error(`Joke with id ${id} does not exist`);
+    if (!joke) throw new ClientError(`Joke with id ${id} does not exist`);
 
     await joke.destroy(loaders.joke);
     return { joke };

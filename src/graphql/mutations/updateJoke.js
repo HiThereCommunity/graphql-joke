@@ -5,6 +5,7 @@ import { GraphQLNonNull, GraphQLInt, GraphQLID } from "graphql";
 import { GraphQLJoke } from "../objects";
 import { Joke } from "../../models";
 import type { Context } from "../type";
+import ClientError from './../../utils/clientError';
 
 type Payload = { joke: Joke };
 
@@ -29,7 +30,7 @@ export default mutationWithClientMutationId({
       const { id } = fromGlobalId(jokeId);
       const joke = await Joke.gen(viewer, id, loaders.joke);
       if (!joke) {
-        throw new Error(`Could not find a joke with id ${id}.`);
+        throw new ClientError(`Could not find a joke with id ${id}.`);
       }
       await joke.update(funnyLevel);
       return { joke };

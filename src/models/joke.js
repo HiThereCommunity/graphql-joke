@@ -5,6 +5,7 @@ import db from "../database";
 import DataLoader from "dataloader";
 import { isNumeric } from "../utils";
 import type { ID } from "../graphql";
+import ClientError from "./../utils/clientError";
 
 /**
  * A joke can only be seen by its creator.
@@ -34,9 +35,9 @@ export default class Joke {
     funnyLevel: number,
     loader: DataLoader<string, ?Object>
   ): Promise<Joke> {
-    if (text.length === 0) throw new Error('Joke cannot be an empty string.');
-    if (funnyLevel < 0) throw new Error('Funny level must be an integer greater than or equal to zero');
-    if (funnyLevel > 5) throw new Error(`Funny level ${funnyLevel} is too high, no joke is this funny`)
+    if (text.length === 0) throw new ClientError('Joke cannot be an empty string.');
+    if (funnyLevel < 0) throw new ClientError('Funny level must be an integer greater than or equal to zero');
+    if (funnyLevel > 5) throw new ClientError(`Funny level ${funnyLevel} is too high, no joke is this funny`);
 
 
     const data = await db.joke.create({
@@ -62,8 +63,8 @@ export default class Joke {
 
   async update(funnyLevel: number): Promise<void> {
 
-    if (funnyLevel < 0) throw new Error('Funny level must be an integer greater than or equal to zero');
-    if (funnyLevel > 5) throw new Error(`Funny level ${funnyLevel} is too high, no joke is this funny`)
+    if (funnyLevel < 0) throw new ClientError('Funny level must be an integer greater than or equal to zero');
+    if (funnyLevel > 5) throw new ClientError(`Funny level ${funnyLevel} is too high, no joke is this funny`)
 
     if (this.funnyLevel === funnyLevel) return;
 

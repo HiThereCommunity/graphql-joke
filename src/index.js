@@ -69,7 +69,7 @@ app.use(
     schema,
     graphiql: true,
     context: await createContext(),
-    formatError: formatErrorGraphQL()
+    formatError: formatErrorGraphQL(false)
   }))
 );
 
@@ -82,7 +82,7 @@ app.use(
     schema,
     graphiql: false,
     context: await createContext(),
-    formatError: formatErrorGraphQL()
+    formatError: formatErrorGraphQL(false)
   }))
 );
 
