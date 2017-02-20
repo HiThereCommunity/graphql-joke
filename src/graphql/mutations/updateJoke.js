@@ -16,7 +16,7 @@ export default mutationWithClientMutationId({
     funnyLevel: { type: new GraphQLNonNull(GraphQLInt) }
   },
   outputFields: {
-    updatedJoke: {
+    joke: {
       type: new GraphQLNonNull(GraphQLJoke),
       resolve: (payload: Payload): Joke => payload.joke
     }

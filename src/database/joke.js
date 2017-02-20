@@ -9,7 +9,6 @@ export default (sequelize: Object, DataTypes: Object): Object => {
     funnyLevel: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: false
     }
   }, {
     classMethods: {

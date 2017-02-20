@@ -4,8 +4,11 @@ import User from "./user";
 import db from "../database";
 import DataLoader from "dataloader";
 import { isNumeric } from "../utils";
-import { type ID } from "../graphql";
+import type { ID } from "../graphql";
 
+/**
+ * A joke can only be seen by its creator.
+ */
 const canYouSeeJoke = (viewer: User, data: Object): boolean => {
   return viewer.id === String(data.creator);
 };
@@ -42,26 +45,7 @@ export default class Joke {
       creator: viewer.id
     });
 
-    //Update the cache
-    loader.prime(data.id, data);
     return new Joke(data);
-  }
-
-  static async genList(
-    viewer: User,
-    loader: DataLoader<string, ?Object>,
-    user: User
-  ): Promise<Array<Promise<?Joke>>> {
-
-    const data: Array<Object> = await db.Joke.findAll({
-      where: {
-        creator: user.id,
-      },
-      attributes: ["id"]
-    });
-
-    const map = data.map(entry => Joke.gen(viewer, entry.id, loader));
-    return map;
   }
 
   _jokeEntity: Object;

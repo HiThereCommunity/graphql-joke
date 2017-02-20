@@ -1,4 +1,4 @@
-1// @flow
+// @flow
 
 import { mutationWithClientMutationId, fromGlobalId } from "graphql-relay";
 import { GraphQLNonNull, GraphQLID } from "graphql";
@@ -13,7 +13,7 @@ export default mutationWithClientMutationId({
   description: "Delete a joke.",
   inputFields: { jokeId: { type: new GraphQLNonNull(GraphQLID) } },
   outputFields: {
-    todo: {
+    joke: {
       type: new GraphQLNonNull(GraphQLJoke),
       description: "The deleted joke",
       resolve: (payload: Payload): Joke => payload.joke

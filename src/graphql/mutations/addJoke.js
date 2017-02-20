@@ -1,7 +1,7 @@
 // @flow
 
 import { mutationWithClientMutationId } from "graphql-relay";
-import { GraphQLString, GraphQLNonNull } from "graphql";
+import { GraphQLString, GraphQLNonNull, GraphQLInt } from "graphql";
 import { GraphQLJoke } from "../objects";
 import { Joke } from "../../models";
 import type { Context } from "../type";
@@ -15,12 +15,12 @@ export default mutationWithClientMutationId({
       description: "The joke."
     },
     funnyLevel: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLInt),
       description: "The funny level of the joke, the higher the better."
     }
   },
   outputFields: {
-    newTodo: {
+    joke: {
       type: new GraphQLNonNull(GraphQLJoke),
       resolve: payload => payload.joke
     }

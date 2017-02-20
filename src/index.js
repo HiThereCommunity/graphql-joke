@@ -21,11 +21,6 @@ import { batchGetJokes, batchGetUsers} from "./loaders";
 import config from "./config";
 import DataLoader from "dataloader";
 
-// db.user.create({
-//   id: 1,
-//   name: "Bob"
-// });
-
 const createContext = async (): Promise<Context> => {
 
   const jokeLoader = new DataLoader(ids => batchGetJokes(ids));
