@@ -21,12 +21,16 @@ import { batchGetJokes, batchGetUsers} from "./loaders";
 import config from "./config";
 import DataLoader from "dataloader";
 
+import formatErrorGraphQL from './utils/GraphQLErrorFormatter';
+
 const createContext = async (): Promise<Context> => {
 
   const jokeLoader = new DataLoader(ids => batchGetJokes(ids));
   const userLoader = new DataLoader(ids => batchGetUsers(ids));
 
+  //We assume that a user with id 1 exists.
   const user = await User.genAuth("1", userLoader);
+
   if (!user) throw new Error("Could not find user");
   return {
     loaders: {
@@ -65,7 +69,7 @@ app.use(
     schema,
     graphiql: true,
     context: await createContext(),
-    formatError
+    formatError: formatErrorGraphQL()
   }))
 );
 
@@ -78,7 +82,7 @@ app.use(
     schema,
     graphiql: false,
     context: await createContext(),
-    formatError
+    formatError: formatErrorGraphQL()
   }))
 );
 

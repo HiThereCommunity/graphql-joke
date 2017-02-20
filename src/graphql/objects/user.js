@@ -17,6 +17,8 @@ import GraphQLJoke from "./joke";
 
 import { User } from "../../models";
 import type { ID, Context } from "../type";
+import ClientError from "./../../utils/clientError";
+
 
 const { connectionType: JokeItemConnection } = connectionDefinitions({
   nodeType: new GraphQLNonNull(GraphQLJoke)
@@ -30,8 +32,7 @@ export default new GraphQLObjectType({
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The name of the user",
-      resolve: (user: User, args: Object): string =>
-        user.name
+      resolve: (user: User, args: Object): string => user.name
     },
     jokes: {
       type: new GraphQLNonNull(JokeItemConnection),
