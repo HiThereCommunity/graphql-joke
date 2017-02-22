@@ -3,19 +3,21 @@
 import {
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLString,
+  GraphQLID,
+  GraphQLString
 } from "graphql";
 import {
   globalIdField,
   connectionDefinitions,
   connectionArgs,
   connectionFromPromisedArray,
+  fromGlobalId
 } from "graphql-relay";
 
 import { nodeInterface } from "./relayNode";
 import GraphQLJoke from "./joke";
 
-import { User } from "../../models";
+import { User, Joke } from "../../models";
 import type { ID, Context } from "../type";
 
 
@@ -42,6 +44,20 @@ export default new GraphQLObjectType({
           user.jokes(loaders.joke),
           args
         )
+    },
+    joke: {
+      type: GraphQLJoke,
+      description: "The user's joke for an id",
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: "The id of the joke"
+        }
+      },
+      resolve: async (user: User, args, { viewer, loaders }: Context) => {
+        const { id }: { id: string } = fromGlobalId(args.id);
+        return await Joke.gen(viewer, id, loaders.joke);
+      }
     }
   }),
   // Relay will use this function to determine if an object in your system is
