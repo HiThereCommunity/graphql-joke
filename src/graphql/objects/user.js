@@ -22,7 +22,7 @@ import type { ID, Context } from "../type";
 
 
 const { connectionType: JokeItemConnection } = connectionDefinitions({
-  nodeType: new GraphQLNonNull(GraphQLJoke)
+  nodeType: GraphQLJoke
 });
 
 export default new GraphQLObjectType({
