@@ -27,6 +27,7 @@ const createContext = async (): Promise<Context> => {
   const viewer = await User.genAuth("1", userLoader);
 
   if (!viewer) throw new Error("Could not find viewer");
+
   return {
     loaders: {
       joke: jokeLoader,
