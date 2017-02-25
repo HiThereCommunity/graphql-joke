@@ -17,27 +17,24 @@ import type { Context } from "./graphql";
 import { User } from "./models";
 import db from "./database";
 
-import { batchGetTodoItems, batchGetUsers} from "./loaders";
+import { batchGetJokes, batchGetUsers} from "./loaders";
 import config from "./config";
 import DataLoader from "dataloader";
 
-import formatErrorGraphQL from './utils/GraphQLErrorFormatter';
-
-// db.user.create({
-//   id: 1,
-//   name: "Bob"
-// });
+import { graphQLErrorFormatter } from './utils';
 
 const createContext = async (): Promise<Context> => {
 
-  const todoItemLoader = new DataLoader(ids => batchGetTodoItems(ids));
+  const jokeLoader = new DataLoader(ids => batchGetJokes(ids));
   const userLoader = new DataLoader(ids => batchGetUsers(ids));
 
+  //We assume that a user with id 1 exists.
   const user = await User.genAuth("1", userLoader);
+
   if (!user) throw new Error("Could not find user");
   return {
     loaders: {
-      todoItem: todoItemLoader,
+      joke: jokeLoader,
       user: userLoader
     },
     viewer: user
@@ -45,23 +42,6 @@ const createContext = async (): Promise<Context> => {
 };
 
 const app = express();
-
-const formatError = error => {
-  if (config.environment === "development") {
-    return {
-      message: error.message,
-      stack: error.stack.split("\n"),
-      locations: error.locations,
-      path: error.path
-    };
-  } else if (config.environment === "production") {
-    return {
-      message: error.message,
-      locations: error.locations,
-      path: error.path
-    };
-  }
-};
 
 /**
  * The GraphiQL endpoint
@@ -72,7 +52,7 @@ app.use(
     schema,
     graphiql: true,
     context: await createContext(),
-    formatError: formatErrorGraphQL()
+    formatError: graphQLErrorFormatter(config.debugMode)
   }))
 );
 
@@ -85,7 +65,7 @@ app.use(
     schema,
     graphiql: false,
     context: await createContext(),
-    formatError
+    formatError: graphQLErrorFormatter(config.debugMode)
   }))
 );
 

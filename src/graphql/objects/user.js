@@ -3,55 +3,61 @@
 import {
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLString,
-  GraphQLBoolean
+  GraphQLID,
+  GraphQLString
 } from "graphql";
 import {
   globalIdField,
   connectionDefinitions,
   connectionArgs,
   connectionFromPromisedArray,
+  fromGlobalId
 } from "graphql-relay";
 
 import { nodeInterface } from "./relayNode";
-import GraphQLTodoItem from "./todoItem";
+import GraphQLJoke from "./joke";
 
-import { User, TodoItem } from "../../models";
+import { User, Joke } from "../../models";
 import type { ID, Context } from "../type";
 
-import ClientError from "./../../utils/clientError";
 
-const { connectionType: TodoItemConnection } = connectionDefinitions({
-  nodeType: GraphQLTodoItem
+const { connectionType: JokeItemConnection } = connectionDefinitions({
+  nodeType: GraphQLJoke
 });
 
 export default new GraphQLObjectType({
   name: "User",
-  description: "Represents a happy owner of some todos",
+  description: "Represents a user of the joke API.",
   fields: () => ({
-    id: globalIdField("TodoItem", (user: User): ID => user.id),
+    id: globalIdField("User", (user: User): ID => user.id),
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The name of the user",
-      resolve: (root: Object, args: Object, { viewer }: Context): string => {
-        throw new ClientError("aaaao");
-      }
+      resolve: (user: User, args: Object): string => user.name
     },
-    todos: {
-      type: TodoItemConnection,
-      description: "All the todo items.",
-      args: {
-        completed: {
-          type: GraphQLBoolean,
-          description: "An optional filter for completed todo items, if not set then all todos are retrieved"
-        },
-        ...connectionArgs
-      },
+    jokes: {
+      type: new GraphQLNonNull(JokeItemConnection),
+      description: "All the user's jokes.",
+      args: connectionArgs,
       resolve: (user: User, args, { viewer, loaders }: Context) =>
         connectionFromPromisedArray(
-          TodoItem.genList(viewer, loaders.todoItem, user, args.completed),
+          user.jokes(loaders.joke),
           args
         )
+    },
+    joke: {
+      type: GraphQLJoke,
+      description: "The user's joke for an id",
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: "The id of the joke"
+        }
+      },
+      resolve: async (user: User, args, { viewer, loaders }: Context) => {
+        const { id }: { id: string } = fromGlobalId(args.id);
+        return await Joke.gen(viewer, id, loaders.joke);
+      }
     }
   }),
   // Relay will use this function to determine if an object in your system is

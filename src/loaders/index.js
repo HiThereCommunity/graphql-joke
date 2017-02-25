@@ -20,7 +20,7 @@ function indexResults(results, indexField, cacheKeyFn = key => key) {
   return indexedResults;
 }
 
-export const batchGetTodoItems = (ids: Array<string>) => db.todo_item
+export const batchGetJokes = (ids: Array<string>) => db.joke
   .findAll({
     where: {
       id: { $in: ids }

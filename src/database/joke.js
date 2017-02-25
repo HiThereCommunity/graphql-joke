@@ -1,20 +1,19 @@
 // @flow
 
 export default (sequelize: Object, DataTypes: Object): Object => {
-  const todoItem = sequelize.define('todo_item', {
-    title: {
-      type: DataTypes.STRING,
+  const joke = sequelize.define('joke', {
+    text: {
+      type: DataTypes.TEXT,
       allowNull: false
     },
-    completed: {
-      type: DataTypes.BOOLEAN,
+    funnyLevel: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: false
     }
   }, {
     classMethods: {
       associate: (models) => {
-        todoItem.belongsTo(models.user, {
+        joke.belongsTo(models.user, {
           foreignKey: {
             name: "creator",
             allowNull: false,
@@ -25,5 +24,5 @@ export default (sequelize: Object, DataTypes: Object): Object => {
     }
   });
 
-  return todoItem;
+  return joke;
 }

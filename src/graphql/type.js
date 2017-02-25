@@ -7,7 +7,7 @@ export type ID = string;
 
 export type Context = {
   loaders: {
-    todoItem: DataLoader<string, ?Object>,
+    joke: DataLoader<string, ?Object>,
     user: DataLoader<string, ?Object>
   },
   viewer: User

@@ -10,4 +10,4 @@ export const schema = new GraphQLSchema({
   mutation
 });
 
-export type { Context } from "./type";
+export type { Context, ID } from "./type";

@@ -6,3 +6,4 @@
 export function isNumeric(num: string): boolean {
     return !isNaN(num)
 }
+export { default as graphQLErrorFormatter } from "./graphQLErrorFormatter";
