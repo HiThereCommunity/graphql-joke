@@ -22,14 +22,24 @@ export default class User {
     return canSee ? new User(data) : null;
   }
 
-  //TODO: Add authorization token here...
   static async genAuth(
     id: string,
     loader: DataLoader<string, ?Object>
   ): Promise<?User> {
     if (!isNumeric(id)) return null;
-    const user = await loader.load(id);
-    return user ? new User(user) : null;
+
+    let user;
+    user = await loader.load(id);
+
+    // If user doesn't exist then create one to mock
+    // the behavior of retrieving a user from an auth token.
+    if (!user) {
+      user = await db.user.create({
+        id,
+        name: "Bob"
+      });
+    }
+    return new User(user);
   }
 
   id: string;
