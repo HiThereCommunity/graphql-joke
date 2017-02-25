@@ -21,7 +21,7 @@ import { batchGetJokes, batchGetUsers} from "./loaders";
 import config from "./config";
 import DataLoader from "dataloader";
 
-import formatErrorGraphQL from './utils/GraphQLErrorFormatter';
+import { graphQLErrorFormatter } from './utils';
 
 const createContext = async (): Promise<Context> => {
 
@@ -52,7 +52,7 @@ app.use(
     schema,
     graphiql: true,
     context: await createContext(),
-    formatError: formatErrorGraphQL(config.debugMode)
+    formatError: graphQLErrorFormatter(config.debugMode)
   }))
 );
 
@@ -65,7 +65,7 @@ app.use(
     schema,
     graphiql: false,
     context: await createContext(),
-    formatError: formatErrorGraphQL(config.debugMode)
+    formatError: graphQLErrorFormatter(config.debugMode)
   }))
 );
 
