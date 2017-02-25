@@ -1,7 +1,7 @@
 {
-  "name": "todo-list",
+  "name": "joke",
   "version": "1.0.0",
-  "description": "Example of a graphql todo-list server",
+  "description": "A GraphQL Joke API",
   "scripts": {
     "start": "NODE_ENV=development nodemon src/index.js --exec babel-node",
     "build": "babel src --ignore __tests__ --out-dir dist/",
@@ -12,16 +12,6 @@
     "travis": "npm run check && npm run lint && npm run test",
     "lint": "eslint src"
   },
-  "engines": {
-    "node": "4.x || 5.x || 6.x || 7.x",
-    "npm": "2.x || 3.x"
-  },
-  "keywords": [
-    "todo-list",
-    "graphQL",
-    "API",
-    "node.js"
-  ],
   "author": "Dirk-Jan Rutten <dirkjanrutten@gmail.com>",
   "license": "MIT",
   "dependencies": {

@@ -14,7 +14,7 @@ const options = {
   dialect: "postgres",
   port: configDB.port,
   //prevent sequelize from logging all the queries to the console.
-  //logging: true
+  logging: false
 };
 
 //Create a connection with sequelize

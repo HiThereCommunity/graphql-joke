@@ -1,12 +1,4 @@
 // @flow
-/**
- * Copyright (c) 2016, Dirk-Jan Rutten
- * All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
 
 import "babel-polyfill";
 
@@ -28,16 +20,19 @@ const createContext = async (): Promise<Context> => {
   const jokeLoader = new DataLoader(ids => batchGetJokes(ids));
   const userLoader = new DataLoader(ids => batchGetUsers(ids));
 
-  //We assume that a user with id 1 exists.
-  const user = await User.genAuth("1", userLoader);
+  /**
+   * The viewer is usually retrieved from the access token in the request.
+   * To keep this example simple we simulate this by retrieving the user with id 1.
+   */
+  const viewer = await User.genAuth("1", userLoader);
 
-  if (!user) throw new Error("Could not find user");
+  if (!viewer) throw new Error("Could not find viewer");
   return {
     loaders: {
       joke: jokeLoader,
       user: userLoader
     },
-    viewer: user
+    viewer
   };
 };
 

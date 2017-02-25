@@ -7,21 +7,6 @@
 //Client-oriented errors will be represented by instances of the ClientError class.
 //
 
-
-// declare class ClientError extends Error {}
-// eslint-disable-next-line no-redeclare
-// export default function ClientError(message) {
-//   this.message = message;
-//   this.stack = (new Error()).stack;
-// }
-//
-//
-// (ClientError: any).prototype = Object.create(Error.prototype, {
-//   constructor: { value: ClientError },
-//   name: { value: "ClientError" }
-// });
-
-
 export default class ClientError {
   constructor(message) {
     this.name = 'ClientError';
